@@ -5,8 +5,10 @@ import {
   Navigate
 } from "react-router-dom";
 
+
 import LoginPage from "./modules/auth/pages/LoginPage";
 import DashboardPage from "./modules/dashboard/pages/DashboardPage";
+import ClientesPage from "./modules/clientes/pages/ClientesPage";
 
 import useAuthStore from "./store/authStore";
 
@@ -33,6 +35,8 @@ function App() {
               : <Navigate to="/" />
           }
         />
+
+        <Route path="/clientes" element={<ClientesPage />} />
 
       </Routes>
 

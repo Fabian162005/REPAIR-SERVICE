@@ -10,9 +10,11 @@ function DashboardLayout({ children }) {
       <Sidebar />
 
       <div
-        className="flex-grow-1 bg-light"
+        className="flex-grow-1"
         style={{
-          minHeight: "100vh"
+          marginLeft: "260px",
+          minHeight: "100vh",
+          background: "#f8fafc"
         }}
       >
 

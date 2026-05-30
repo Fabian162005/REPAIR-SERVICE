@@ -1,0 +1,28 @@
+$kind: http-request
+name: CREAR CLIENTE
+url: http://127.0.0.1:8000/api/clientes
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"tipo_documento\": \"DNI\",\r
+
+    \    \"numero_documento\": \"72888888\",\r
+
+    \    \"nombres\": \"Fabian\",\r
+
+    \    \"apellidos\": \"Nizama\",\r
+
+    \    \"celular\": \"999999999\",\r
+
+    \    \"correo\": \"fabian@gmail.com\",\r
+
+    \    \"direccion\": \"Piura\",\r
+
+    \    \"distrito\": \"Castilla\",\r
+
+    \    \"ciudad\": \"Piura\"\r
+
+    }"
+order: 1779999749322

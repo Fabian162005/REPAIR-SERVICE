@@ -4,77 +4,69 @@ function Sidebar() {
 
   return (
 
-    <div
-      className="bg-dark text-white p-3"
-      style={{
-        width: "250px",
-        minHeight: "100vh"
-      }}
-    >
+   <div
+    style={{
+        width: "260px",
+        background: "#0f172a",
+        minHeight: "100vh",
+        padding: "25px 20px",
+        color: "white",
+        position: "fixed",
+        left: 0,
+        top: 0
+    }}
+>
 
-      <h3 className="mb-4 text-info">
-        RepairService
-      </h3>
+    <div className="mb-5">
 
-      <ul className="nav flex-column">
-
-        <li className="nav-item mb-2">
-          <Link
-            to="/dashboard"
-            className="nav-link text-white"
-          >
-            Dashboard
-          </Link>
-        </li>
-
-        <li className="nav-item mb-2">
-          <Link
-            to="/clientes"
-            className="nav-link text-white"
-          >
-            Clientes
-          </Link>
-        </li>
-
-        <li className="nav-item mb-2">
-          <Link
-            to="/ordenes"
-            className="nav-link text-white"
-          >
-            Órdenes
-          </Link>
-        </li>
-
-        <li className="nav-item mb-2">
-          <Link
-            to="/equipos"
-            className="nav-link text-white"
-          >
-            Equipos
-          </Link>
-        </li>
-
-        <li className="nav-item mb-2">
-          <Link
-            to="/inventario"
-            className="nav-link text-white"
-          >
-            Inventario
-          </Link>
-        </li>
-
-        <li className="nav-item mb-2">
-          <Link
-            to="/usuarios"
-            className="nav-link text-white"
-          >
-            Usuarios
-          </Link>
-        </li>
-
-      </ul>
+        <img
+            src="/logo-repair-service.png"
+            alt="logo"
+            style={{
+                width: "100%",
+                maxWidth: "170px",
+                display: "block",
+                margin: "0 auto"
+            }}
+        />
 
     </div>
+
+    <div className="d-flex flex-column gap-2">
+
+        <Link
+        className="sidebar-link"
+        to="/dashboard"
+        >
+        Dashboard
+        </Link>
+
+        <Link
+        className="sidebar-link"
+        to="/clientes"
+        >
+        Clientes
+        </Link>
+
+        <a className="sidebar-link" href="#">
+            Órdenes
+        </a>
+
+        <a className="sidebar-link" href="#">
+            Equipos
+        </a>
+
+        <a className="sidebar-link" href="#">
+            Inventario
+        </a>
+
+        <a className="sidebar-link" href="#">
+            Usuarios
+        </a>
+
+    </div>
+
+</div>
 
   );
 
