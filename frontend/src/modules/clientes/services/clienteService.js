@@ -8,3 +8,6 @@ export const actualizarCliente = (id, data) =>
 
 export const eliminarCliente = (id) =>
   api.delete(`/clientes/${id}`);
+
+export const obtenerClientes = () =>
+  api.get("/clientes");

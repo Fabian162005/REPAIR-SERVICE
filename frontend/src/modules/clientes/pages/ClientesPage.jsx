@@ -6,7 +6,6 @@ import {
   eliminarCliente,
 } from "../../../services/clienteService";
 
-import DashboardLayout from "../../../layouts/DashboardLayout";
 import ClienteModal from "../components/ClienteModal";
 
 const ClientesPage = () => {
@@ -87,9 +86,10 @@ const ClientesPage = () => {
 
   return (
 
-    <DashboardLayout>
+      <>
 
-      <div className="container-fluid">
+    <div className="container-fluid">
+
 
         <div className="d-flex justify-content-between align-items-center mb-4">
 
@@ -203,24 +203,17 @@ const ClientesPage = () => {
 
       </div>
 
-     {
-  showModal && (
-
-    <ClienteModal
-      clienteEditar={clienteEditar}
-      onClose={() => {
-        setShowModal(false);
-        setClienteEditar(null);
-      }}
-      onSuccess={cargarClientes}
-    />
-
-  )
+   {showModal && (
+      <ClienteModal
+        clienteEditar={clienteEditar}
+        onClose={() => {
+          setShowModal(false);
+          setClienteEditar(null);
+        }}
+        onSuccess={cargarClientes}
+      />
+    )}
+  </>
+);
 }
-    </DashboardLayout>
-
-  );
-
-};
-
 export default ClientesPage;

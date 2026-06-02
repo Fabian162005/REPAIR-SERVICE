@@ -48,13 +48,19 @@ function Sidebar() {
         Clientes
         </Link>
 
-        <a className="sidebar-link" href="#">
-            Órdenes
-        </a>
+        <Link
+            to="/ordenes"
+            className="sidebar-link"
+        >
+            Órdenes de Servicio
+        </Link>
 
-        <a className="sidebar-link" href="#">
-            Equipos
-        </a>
+         <Link
+        className="sidebar-link"
+        to="/equipos"
+        >
+        Equipos
+        </Link>
 
         <a className="sidebar-link" href="#">
             Inventario

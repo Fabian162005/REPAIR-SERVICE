@@ -1,0 +1,30 @@
+$kind: http-request
+name: EDITAR ORDENES
+url: http://127.0.0.1:8000/api/ordenes-servicio/1
+method: PUT
+body:
+  type: json
+  content: "{\r
+
+    \    \"cliente_id\": 1,\r
+
+    \    \"equipo_id\": 1,\r
+
+    \    \"tipo_rubro\": \"TECNOLOGIA\",\r
+
+    \    \"falla_reportada\": \"Cambio de pantalla\",\r
+
+    \    \"accesorios\": \"Cargador\",\r
+
+    \    \"contrasena\": \"1234\",\r
+
+    \    \"prioridad\": \"ALTA\",\r
+
+    \    \"fecha_ingreso\": \"2026-06-01 10:00:00\",\r
+
+    \    \"total\": 250,\r
+
+    \    \"adelanto\": 100\r
+
+    }"
+order: 871664863676787

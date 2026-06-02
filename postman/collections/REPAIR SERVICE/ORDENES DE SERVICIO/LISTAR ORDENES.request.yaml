@@ -1,0 +1,5 @@
+$kind: http-request
+name: LISTAR ORDENES
+url: http://127.0.0.1:8000/api/ordenes-servicio
+method: GET
+order: 2000

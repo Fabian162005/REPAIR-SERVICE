@@ -1,0 +1,5 @@
+$kind: http-request
+name: LISTAR EQUIPOS
+url: http://127.0.0.1:8000/api/equipos
+method: GET
+order: 547353614479

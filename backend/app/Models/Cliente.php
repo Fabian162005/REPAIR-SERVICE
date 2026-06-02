@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Cliente extends Model
 {
+    
     protected $table = 'clientes';
 
     protected $fillable = [
@@ -31,4 +32,17 @@ class Cliente extends Model
     protected $casts = [
         'activo' => 'boolean',
     ];
+    
+        public function equipos()
+    {
+        return $this->hasMany(Equipo::class);
+    }
+
+    public function ordenesServicio()
+{
+    return $this->hasMany(
+        OrdenServicio::class
+    );
 }
+}
+

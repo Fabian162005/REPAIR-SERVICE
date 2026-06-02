@@ -9,6 +9,9 @@ import {
 import LoginPage from "./modules/auth/pages/LoginPage";
 import DashboardPage from "./modules/dashboard/pages/DashboardPage";
 import ClientesPage from "./modules/clientes/pages/ClientesPage";
+import EquiposPage from "./modules/equipos/pages/EquiposPage";
+import DashboardLayout from "./layouts/DashboardLayout";
+import OrdenesPage from "./modules/ordenes/pages/OrdenesPage";
 
 import useAuthStore from "./store/authStore";
 
@@ -30,13 +33,47 @@ function App() {
         <Route
           path="/dashboard"
           element={
-            token
-              ? <DashboardPage />
-              : <Navigate to="/" />
+            token ? (
+              <DashboardLayout>
+                <DashboardPage />
+              </DashboardLayout>
+            ) : (
+              <Navigate to="/" />
+            )
           }
         />
 
-        <Route path="/clientes" element={<ClientesPage />} />
+
+        <Route
+          path="/clientes"
+          element={
+            token ? (
+              <DashboardLayout>
+                <ClientesPage />
+              </DashboardLayout>
+            ) : (
+              <Navigate to="/" />
+            )
+          }
+        />
+
+        <Route
+          path="/equipos"
+          element={
+            token ? (
+              <DashboardLayout>
+                <EquiposPage />
+              </DashboardLayout>
+            ) : (
+              <Navigate to="/" />
+            )
+          }
+        />
+
+        <Route
+            path="/ordenes"
+            element={<OrdenesPage />}
+        />
 
       </Routes>
 

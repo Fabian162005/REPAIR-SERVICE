@@ -1,0 +1,26 @@
+$kind: http-request
+name: CREAR EQUIPOS
+url: http://127.0.0.1:8000/api/equipos
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"cliente_id\": 1,\r
+
+    \  \"tipo_equipo\": \"LAPTOP\",\r
+
+    \  \"marca\": \"HP\",\r
+
+    \  \"modelo\": \"Pavilion 15\",\r
+
+    \  \"numero_serie\": \"HP123456\",\r
+
+    \  \"procesador\": \"Core i5\",\r
+
+    \  \"ram\": \"16GB\",\r
+
+    \  \"almacenamiento\": \"512GB SSD\"\r
+
+    }"
+order: 2794597222499206
