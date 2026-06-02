@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\OrdenEstado;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOrdenServicioRequest;
 use App\Http\Requests\UpdateOrdenServicioRequest;
@@ -54,7 +55,10 @@ class OrdenServicioController extends Controller
             OrdenServicio::max('id') + 1;
 
         $data['codigo_orden'] =
-            'OS-' .
+            ($data['tipo_rubro'] === 'VEHICULAR'
+                ? 'MEC-'
+                : 'TEC-')
+            .
             str_pad(
                 $ultimoId,
                 6,
@@ -71,6 +75,18 @@ class OrdenServicioController extends Controller
             $data
         );
 
+        OrdenEstado::create([
+
+            'orden_servicio_id' => $orden->id,
+
+            'usuario_id' => auth()->id(),
+
+            'estado' => $orden->estado_actual,
+
+            'observacion' => 'Orden creada',
+
+        ]);
+
         return response()->json([
             'message' =>
                 'Orden creada correctamente',
@@ -82,10 +98,13 @@ class OrdenServicioController extends Controller
     public function show(string $id)
     {
         $orden = OrdenServicio::with([
+
             'cliente',
             'equipo',
             'usuario',
-            'tecnico'
+            'tecnico',
+            'estados.usuario'
+
         ])
         ->findOrFail($id);
 
@@ -98,7 +117,6 @@ class OrdenServicioController extends Controller
         UpdateOrdenServicioRequest $request,
         string $id
     ) {
-
         $orden =
             OrdenServicio::findOrFail(
                 $id
@@ -115,6 +133,33 @@ class OrdenServicioController extends Controller
         $orden->update(
             $data
         );
+
+        $estadoAnterior =
+            $orden->estado_actual;
+
+        $orden->update($data);
+
+        if (
+            isset($data['estado_actual'])
+            &&
+            $estadoAnterior !== $data['estado_actual']
+        ) {
+
+            OrdenEstado::create([
+
+                'orden_servicio_id' =>
+                    $orden->id,
+
+                'usuario_id' =>
+                    auth()->id(),
+
+                'estado' =>
+                    $data['estado_actual'],
+
+                'observacion' =>
+                    'Cambio de estado',
+            ]);
+        }
 
         return response()->json([
             'message' =>

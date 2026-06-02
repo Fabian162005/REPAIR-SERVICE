@@ -38,6 +38,12 @@ const initialState = {
 
     total: 0,
     adelanto: 0,
+
+    estado_actual: "RECEPCIONADO",
+
+    diagnostico_preliminar: "",
+
+    diagnostico_final: "",
 };
 
 export default function OrdenModal({
@@ -124,18 +130,17 @@ export default function OrdenModal({
             }
         };
 
-    const handleChange = (e) => {
+   const handleChange = (e) => {
 
-        const {
-            name,
-            value,
-        } = e.target;
+    const { name, value } = e.target;
 
-        setFormData(prev => ({
-            ...prev,
-            [name]: value,
-        }));
-    };
+    console.log(name, value);
+
+    setFormData(prev => ({
+        ...prev,
+        [name]: value,
+    }));
+};
 
     const handleSubmit =
         async (e) => {
@@ -161,27 +166,29 @@ export default function OrdenModal({
 
                 }
 
-                if (onSuccess) {
+              if (onSuccess) {
 
-                    onSuccess();
+                    await onSuccess();
 
                 }
 
                 handleClose();
-
             } catch (error) {
 
-                console.error(error);
+    console.error(error);
 
-                alert(
-                    "Error al guardar la orden"
-                );
+    console.log(
+        error.response?.data
+    );
 
-            } finally {
-
-                setLoading(false);
-
-            }
+    alert(
+        JSON.stringify(
+            error.response?.data,
+            null,
+            2
+        )
+    );
+}
         };
 
     return (

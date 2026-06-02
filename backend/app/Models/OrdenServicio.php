@@ -87,4 +87,11 @@ class OrdenServicio extends Model
             'tecnico_id'
         );
     }
+
+    public function estados()
+{
+    return $this->hasMany(
+        OrdenEstado::class
+    )->latest();
+}
 }

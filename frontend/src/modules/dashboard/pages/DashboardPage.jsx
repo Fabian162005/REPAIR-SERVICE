@@ -2,13 +2,13 @@ import DashboardLayout from "../../../layouts/DashboardLayout";
 
 function DashboardPage() {
   return (
-    <DashboardLayout>
+    <body>
 
       <h1>Bienvenido a RepairService</h1>
 
       <p>Sistema MultiRubro</p>
 
-    </DashboardLayout>
+    </body>
   );
 }
 

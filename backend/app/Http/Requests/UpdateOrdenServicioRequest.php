@@ -51,6 +51,18 @@ class UpdateOrdenServicioRequest extends FormRequest
 
             'saldo_pendiente' =>
                 'nullable|numeric',
+
+              'diagnostico_preliminar' =>
+                'nullable|string',
+
+            'diagnostico_final' =>
+                'nullable|string',
+
+           'estado_actual' => [
+                'nullable',
+                'in:RECEPCIONADO,DIAGNOSTICO,ESPERANDO_APROBACION,EN_REPARACION,REPARADO,ENTREGADO,CANCELADO'
+            ],
+
         ];
     }
 }

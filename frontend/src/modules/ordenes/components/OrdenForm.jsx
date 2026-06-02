@@ -105,6 +105,46 @@ export default function OrdenForm({
 
             </Col>
 
+            <Col md={12}>
+
+                <Form.Group className="mb-3">
+
+                    <Form.Label>
+                        Diagnóstico Preliminar
+                    </Form.Label>
+
+                    <Form.Control
+                        as="textarea"
+                        rows={3}
+                        name="diagnostico_preliminar"
+                        value={formData.diagnostico_preliminar || ""}
+                        onChange={handleChange}
+                    />
+
+                </Form.Group>
+
+            </Col>
+
+            <Col md={12}>
+
+                <Form.Group className="mb-3">
+
+                    <Form.Label>
+                        Diagnóstico Final
+                    </Form.Label>
+
+                    <Form.Control
+                        as="textarea"
+                        rows={3}
+                        name="diagnostico_final"
+                        value={formData.diagnostico_final || ""}
+                        onChange={handleChange}
+                    />
+
+                </Form.Group>
+
+            </Col>
+
             <Col md={6}>
 
                 <Form.Group className="mb-3">
@@ -122,6 +162,54 @@ export default function OrdenForm({
                 </Form.Group>
 
             </Col>
+
+            <Col md={6}>
+
+            <Form.Group className="mb-3">
+
+                <Form.Label>
+                    Estado
+                </Form.Label>
+
+                <Form.Select
+                    name="estado_actual"
+                    value={formData.estado_actual}
+                    onChange={handleChange}
+                >
+
+                    <option value="RECEPCIONADO">
+                        RECEPCIONADO
+                    </option>
+
+                    <option value="DIAGNOSTICO">
+                        DIAGNOSTICO
+                    </option>
+
+                    <option value="ESPERANDO_APROBACION">
+                        ESPERANDO APROBACION
+                    </option>
+
+                    <option value="EN_REPARACION">
+                        EN REPARACION
+                    </option>
+
+                    <option value="REPARADO">
+                        REPARADO
+                    </option>
+
+                    <option value="ENTREGADO">
+                        ENTREGADO
+                    </option>
+
+                    <option value="CANCELADO">
+                        CANCELADO
+                    </option>
+
+                </Form.Select>
+
+            </Form.Group>
+
+        </Col>
 
             <Col md={6}>
 
@@ -198,6 +286,30 @@ export default function OrdenForm({
                         name="adelanto"
                         value={formData.adelanto}
                         onChange={handleChange}
+                    />
+
+                </Form.Group>
+
+            </Col>
+
+            <Col md={4}>
+
+                <Form.Group className="mb-3">
+
+                    <Form.Label>
+                        Saldo Pendiente
+                    </Form.Label>
+
+                    <Form.Control
+                        type="number"
+                        value={
+                            (
+                                Number(formData.total || 0)
+                                -
+                                Number(formData.adelanto || 0)
+                            ).toFixed(2)
+                        }
+                        disabled
                     />
 
                 </Form.Group>

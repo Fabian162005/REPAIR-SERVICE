@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-
+import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../../../layouts/DashboardLayout";
 
 import OrdenModal from "../components/OrdenModal";
+import OrdenDetalleModal from "../components/OrdenDetalleModal";
 
 import {
     getOrdenes,
@@ -21,29 +22,39 @@ export default function OrdenesPage() {
     const [showModal, setShowModal] =
         useState(false);
 
+
     const [ordenEditar, setOrdenEditar] =
         useState(null);
 
-    const cargarOrdenes =
-        async () => {
+    const [showDetalle, setShowDetalle] =
+    useState(false);
 
-            try {
+    const [ordenDetalle, setOrdenDetalle] =
+        useState(null);
 
-                const response =
-                    await getOrdenes(
-                        buscar
-                    );
+    const navigate = useNavigate()
 
-                setOrdenes(
-                    response.data.data || []
-                );
+    const cargarOrdenes = async () => {
 
-            } catch (error) {
+    try {
 
-                console.error(error);
+        const response =
+            await getOrdenes(buscar);
 
-            }
-        };
+        console.log(
+            response.data.data
+        );
+
+        setOrdenes(
+            response.data.data || []
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+};
 
     useEffect(() => {
 
@@ -257,11 +268,39 @@ export default function OrdenesPage() {
                                                 }
                                             </td>
 
-                                            <td>
-                                                {
-                                                    orden.estado_actual
+                                          <td>
+
+                                            <span
+                                                className={
+                                                    orden.estado_actual === "RECEPCIONADO"
+                                                        ? "badge bg-secondary"
+
+                                                    : orden.estado_actual === "DIAGNOSTICO"
+                                                        ? "badge bg-info"
+
+                                                    : orden.estado_actual === "ESPERANDO_APROBACION"
+                                                        ? "badge bg-warning text-dark"
+
+                                                    : orden.estado_actual === "EN_REPARACION"
+                                                        ? "badge bg-primary"
+
+                                                    : orden.estado_actual === "REPARADO"
+                                                        ? "badge bg-success"
+
+                                                    : orden.estado_actual === "ENTREGADO"
+                                                        ? "badge bg-dark"
+
+                                                    : "badge bg-danger"
                                                 }
-                                            </td>
+                                            >
+
+                                                {orden.estado_actual}
+
+                                            </span>
+
+                                        </td>
+
+                                            
 
                                             <td>
                                                 {
@@ -277,6 +316,22 @@ export default function OrdenesPage() {
                                             </td>
 
                                             <td>
+                                               <button
+                                                className="btn btn-info btn-sm me-2"
+                                                onClick={() => {
+
+                                                    setOrdenDetalle(
+                                                        orden
+                                                    );
+
+                                                    setShowDetalle(
+                                                        true
+                                                    );
+
+                                                }}
+                                            >
+                                                Detalle
+                                            </button>
 
                                                 <button
                                                     className="btn btn-warning btn-sm me-2"
@@ -354,6 +409,14 @@ export default function OrdenesPage() {
 
                 )
             }
+
+            <OrdenDetalleModal
+                show={showDetalle}
+                handleClose={() =>
+                    setShowDetalle(false)
+                }
+                orden={ordenDetalle}
+            />
 
         </DashboardLayout>
 
