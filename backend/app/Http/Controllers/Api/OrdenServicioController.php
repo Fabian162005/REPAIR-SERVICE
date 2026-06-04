@@ -8,6 +8,8 @@ use App\Http\Requests\StoreOrdenServicioRequest;
 use App\Http\Requests\UpdateOrdenServicioRequest;
 use App\Models\OrdenServicio;
 use Illuminate\Http\Request;
+use App\Models\OrdenServicioDetalle;
+use App\Models\OrdenRepuesto;
 
 class OrdenServicioController extends Controller
 {
@@ -75,6 +77,44 @@ class OrdenServicioController extends Controller
             $data
         );
 
+        if (!empty($request->detalles)) {
+
+    foreach ($request->detalles as $detalle) {
+
+        OrdenServicioDetalle::create([
+
+            'orden_servicio_id' => $orden->id,
+
+            'descripcion' => $detalle['descripcion'],
+
+            'precio' => $detalle['precio']
+
+        ]);
+    }
+}
+
+if (!empty($request->repuestos)) {
+
+    foreach ($request->repuestos as $repuesto) {
+
+        OrdenRepuesto::create([
+
+            'orden_servicio_id' => $orden->id,
+
+            'nombre' => $repuesto['nombre'],
+
+            'cantidad' => $repuesto['cantidad'],
+
+            'precio_unitario' =>
+                $repuesto['precio_unitario'],
+
+            'subtotal' =>
+                $repuesto['subtotal']
+
+        ]);
+    }
+}
+
         OrdenEstado::create([
 
             'orden_servicio_id' => $orden->id,
@@ -101,73 +141,120 @@ class OrdenServicioController extends Controller
 
             'cliente',
             'equipo',
+
             'usuario',
             'tecnico',
-            'estados.usuario'
 
-        ])
-        ->findOrFail($id);
+            'estados.usuario',
+
+            'detalles',
+
+            'repuestos'
+
+        ])->findOrFail($id);
 
         return response()->json(
             $orden
         );
     }
 
-    public function update(
-        UpdateOrdenServicioRequest $request,
-        string $id
-    ) {
-        $orden =
-            OrdenServicio::findOrFail(
-                $id
-            );
+   public function update(
+    UpdateOrdenServicioRequest $request,
+    string $id
+) {
 
-        $data =
-            $request->validated();
-
-        $data['saldo_pendiente'] =
-            ($data['total'] ?? $orden->total)
-            -
-            ($data['adelanto'] ?? $orden->adelanto);
-
-        $orden->update(
-            $data
+    $orden =
+        OrdenServicio::findOrFail(
+            $id
         );
 
-        $estadoAnterior =
-            $orden->estado_actual;
+    // GUARDAR EL ESTADO ANTES DE ACTUALIZAR
+    $estadoAnterior =
+        $orden->estado_actual;
 
-        $orden->update($data);
+    $data =
+        $request->validated();
 
-        if (
-            isset($data['estado_actual'])
-            &&
-            $estadoAnterior !== $data['estado_actual']
-        ) {
+    $data['saldo_pendiente'] =
+        ($data['total'] ?? $orden->total)
+        -
+        ($data['adelanto'] ?? $orden->adelanto);
 
-            OrdenEstado::create([
+    // ACTUALIZAR SOLO UNA VEZ
+    $orden->update($data);
 
-                'orden_servicio_id' =>
-                    $orden->id,
+$orden->detalles()->delete();
 
-                'usuario_id' =>
-                    auth()->id(),
+if (!empty($request->detalles)) {
 
-                'estado' =>
-                    $data['estado_actual'],
+    foreach ($request->detalles as $detalle) {
 
-                'observacion' =>
-                    'Cambio de estado',
-            ]);
-        }
+        OrdenServicioDetalle::create([
 
-        return response()->json([
-            'message' =>
-                'Orden actualizada correctamente',
+            'orden_servicio_id' => $orden->id,
 
-            'orden' => $orden
+            'descripcion' => $detalle['descripcion'],
+
+            'precio' => $detalle['precio']
+
         ]);
     }
+}
+
+$orden->repuestos()->delete();
+
+if (!empty($request->repuestos)) {
+
+    foreach ($request->repuestos as $repuesto) {
+
+        OrdenRepuesto::create([
+
+            'orden_servicio_id' => $orden->id,
+
+            'nombre' => $repuesto['nombre'],
+
+            'cantidad' => $repuesto['cantidad'],
+
+            'precio_unitario' =>
+                $repuesto['precio_unitario'],
+
+            'subtotal' =>
+                $repuesto['subtotal']
+
+        ]);
+    }
+}
+
+    // SI CAMBIÓ EL ESTADO, GUARDAR HISTORIAL
+    if (
+        isset($data['estado_actual'])
+        &&
+        $estadoAnterior !== $data['estado_actual']
+    ) {
+
+        OrdenEstado::create([
+
+            'orden_servicio_id' =>
+                $orden->id,
+
+            'usuario_id' =>
+                auth()->id(),
+
+            'estado' =>
+                $data['estado_actual'],
+
+            'observacion' =>
+                'Cambio de estado',
+        ]);
+    }
+
+    return response()->json([
+        'message' =>
+            'Orden actualizada correctamente',
+
+        'orden' => $orden
+    ]);
+}
 
     public function destroy(string $id)
     {

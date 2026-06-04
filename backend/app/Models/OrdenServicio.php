@@ -88,10 +88,24 @@ class OrdenServicio extends Model
         );
     }
 
-    public function estados()
-{
-    return $this->hasMany(
-        OrdenEstado::class
-    )->latest();
-}
+        public function estados()
+    {
+        return $this->hasMany(
+            OrdenEstado::class
+        )->latest();
+    }
+
+    public function detalles()
+    {
+        return $this->hasMany(
+            OrdenServicioDetalle::class
+        );
+    }
+
+    public function repuestos()
+    {
+        return $this->hasMany(
+            OrdenRepuesto::class
+        );
+    }
 }

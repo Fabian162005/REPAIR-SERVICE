@@ -44,6 +44,9 @@ const initialState = {
     diagnostico_preliminar: "",
 
     diagnostico_final: "",
+
+    detalles: [],
+    repuestos: [],
 };
 
 export default function OrdenModal({
@@ -225,6 +228,7 @@ export default function OrdenModal({
                         handleChange={handleChange}
                         clientes={clientes}
                         equipos={equipos}
+                        setFormData={setFormData}
                     />
 
                 </Modal.Body>

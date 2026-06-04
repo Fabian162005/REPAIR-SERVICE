@@ -1,11 +1,169 @@
-import { Row, Col, Form } from "react-bootstrap";
+import {
+    Row,
+    Col,
+    Form,
+    Button,
+    Table
+} from "react-bootstrap";
 
 export default function OrdenForm({
     formData,
     handleChange,
     clientes,
     equipos,
+    setFormData
 }) {
+
+    const agregarServicio = () => {
+
+    setFormData(prev => ({
+
+        ...prev,
+
+        detalles: [
+
+            ...(prev.detalles || []),
+
+            {
+                descripcion: "",
+                precio: 0
+            }
+
+        ]
+
+    }));
+
+};
+
+const eliminarServicio = (index) => {
+
+    setFormData(prev => ({
+
+        ...prev,
+
+        detalles:
+            prev.detalles.filter(
+                (_, i) => i !== index
+            )
+
+    }));
+
+};
+
+const agregarRepuesto = () => {
+
+    setFormData(prev => ({
+
+        ...prev,
+
+        repuestos: [
+
+            ...(prev.repuestos || []),
+
+            {
+
+                nombre: "",
+
+                cantidad: 1,
+
+                precio_unitario: 0,
+
+                subtotal: 0
+
+            }
+
+        ]
+
+    }));
+
+};
+
+const eliminarRepuesto = (index) => {
+
+    setFormData(prev => ({
+
+        ...prev,
+
+        repuestos:
+            prev.repuestos.filter(
+                (_, i) => i !== index
+            )
+
+    }));
+
+};
+
+const actualizarServicio = (
+    index,
+    campo,
+    valor
+) => {
+
+    setFormData(prev => {
+
+        const detalles = [
+            ...(prev.detalles || [])
+        ];
+
+        detalles[index] = {
+            ...detalles[index],
+            [campo]: valor
+        };
+
+        return {
+            ...prev,
+            detalles
+        };
+    });
+
+};
+
+const actualizarRepuesto = (
+    index,
+    campo,
+    valor
+) => {
+
+    setFormData(prev => {
+
+        const repuestos = [
+            ...(prev.repuestos || [])
+        ];
+
+        repuestos[index] = {
+            ...repuestos[index],
+            [campo]: valor
+        };
+
+        if (
+            campo === "cantidad" ||
+            campo === "precio_unitario"
+        ) {
+
+            repuestos[index].subtotal =
+
+                Number(
+                    repuestos[index].cantidad || 0
+                )
+
+                *
+
+                Number(
+                    repuestos[index].precio_unitario || 0
+                );
+        }
+
+        return {
+
+            ...prev,
+
+            repuestos
+
+        };
+
+    });
+
+};
 
     return (
 
@@ -142,6 +300,220 @@ export default function OrdenForm({
                     />
 
                 </Form.Group>
+
+                <hr />
+
+                <div className="d-flex justify-content-between align-items-center mb-3">
+
+                    <h5>
+                        Servicios Realizados
+                    </h5>
+
+                    <Button
+                        size="sm"
+                        onClick={agregarServicio}
+                    >
+                        + Servicio
+                    </Button>
+
+                </div>
+
+               <Table bordered>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Descripción</th>
+
+                        <th width="120">Precio</th>
+
+                        <th width="80">Acción</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {(formData.detalles || []).map((item, index) => (
+
+                        <tr key={index}>
+
+                            <td>
+
+                                <Form.Control
+                                    value={item.descripcion}
+                                    onChange={(e) =>
+                                        actualizarServicio(
+                                            index,
+                                            "descripcion",
+                                            e.target.value
+                                        )
+                                    }
+                                />
+
+                            </td>
+
+                            <td>
+
+                                <Form.Control
+                                    type="number"
+                                    value={item.precio}
+                                    onChange={(e) =>
+                                        actualizarServicio(
+                                            index,
+                                            "precio",
+                                            e.target.value
+                                        )
+                                    }
+                                />
+
+                            </td>
+
+                            <td>
+
+                                <Button
+                                    variant="danger"
+                                    size="sm"
+                                    onClick={() =>
+                                        eliminarServicio(index)
+                                    }
+                                >
+                                    X
+                                </Button>
+
+                            </td>
+
+                        </tr>
+
+                    ))}
+
+                </tbody>
+
+            </Table>
+
+            <hr />
+
+<div className="d-flex justify-content-between align-items-center mb-3">
+
+    <h5>
+        Repuestos Utilizados
+    </h5>
+
+    <Button
+        size="sm"
+        variant="success"
+        onClick={agregarRepuesto}
+    >
+        + Repuesto
+    </Button>
+
+</div>
+
+<Table bordered>
+
+    <thead>
+
+        <tr>
+
+            <th>Nombre</th>
+
+            <th width="100">Cantidad</th>
+
+            <th width="120">P.Unit</th>
+
+            <th width="120">Subtotal</th>
+
+            <th width="80">Acción</th>
+
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        {(formData.repuestos || []).map((item, index) => (
+
+            <tr key={index}>
+
+                <td>
+
+                    <Form.Control
+                        value={item.nombre}
+                        onChange={(e) =>
+                            actualizarRepuesto(
+                                index,
+                                "nombre",
+                                e.target.value
+                            )
+                        }
+                    />
+
+                </td>
+
+                <td>
+
+                    <Form.Control
+                        type="number"
+                        value={item.cantidad}
+                        onChange={(e) =>
+                            actualizarRepuesto(
+                                index,
+                                "cantidad",
+                                e.target.value
+                            )
+                        }
+                    />
+
+                </td>
+
+                <td>
+
+                    <Form.Control
+                        type="number"
+                        value={item.precio_unitario}
+                        onChange={(e) =>
+                            actualizarRepuesto(
+                                index,
+                                "precio_unitario",
+                                e.target.value
+                            )
+                        }
+                    />
+
+                </td>
+
+                <td>
+
+                    <Form.Control
+                        value={item.subtotal}
+                        disabled
+                    />
+
+                </td>
+
+                <td>
+
+                    <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() =>
+                            eliminarRepuesto(index)
+                        }
+                    >
+                        X
+                    </Button>
+
+                </td>
+
+            </tr>
+
+        ))}
+
+    </tbody>
+
+</Table>
 
             </Col>
 

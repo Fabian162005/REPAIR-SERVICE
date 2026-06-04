@@ -7,6 +7,7 @@ import OrdenModal from "../components/OrdenModal";
 import OrdenDetalleModal from "../components/OrdenDetalleModal";
 
 import {
+    getOrden,
     getOrdenes,
     deleteOrden,
 } from "../services/ordenService";
@@ -70,6 +71,28 @@ export default function OrdenesPage() {
 
         cargarOrdenes();
     };
+
+    const handleDetalle = async (id) => {
+
+    try {
+
+        const response =
+            await getOrden(id);
+
+        setOrdenDetalle(
+            response.data
+        );
+
+        setShowDetalle(
+            true
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+};
 
     const handleEliminar =
         async (id) => {
@@ -318,17 +341,11 @@ export default function OrdenesPage() {
                                             <td>
                                                <button
                                                 className="btn btn-info btn-sm me-2"
-                                                onClick={() => {
-
-                                                    setOrdenDetalle(
-                                                        orden
-                                                    );
-
-                                                    setShowDetalle(
-                                                        true
-                                                    );
-
-                                                }}
+                                                onClick={() =>
+                                                    handleDetalle(
+                                                        orden.id
+                                                    )
+                                                }
                                             >
                                                 Detalle
                                             </button>
