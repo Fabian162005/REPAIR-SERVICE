@@ -3,15 +3,26 @@ import {
     Col,
     Form,
     Button,
-    Table
+    Table,
+    Card
 } from "react-bootstrap";
+import {
+    subirArchivoOrden
+}
+from "../services/ordenArchivoService";
+
+import { useEffect } from "react";
 
 export default function OrdenForm({
     formData,
     handleChange,
     clientes,
     equipos,
-    setFormData
+    setFormData,
+
+    archivos,
+    handleArchivos,
+    archivosExistentes
 }) {
 
     const agregarServicio = () => {
@@ -163,7 +174,64 @@ const actualizarRepuesto = (
 
     });
 
+
 };
+
+useEffect(() => {
+
+    const totalServicios =
+
+        (formData.detalles || [])
+            .reduce(
+
+                (acc, item) =>
+
+                    acc +
+                    Number(item.precio || 0),
+
+                0
+            );
+
+    const totalRepuestos =
+
+        (formData.repuestos || [])
+            .reduce(
+
+                (acc, item) =>
+
+                    acc +
+                    Number(item.subtotal || 0),
+
+                0
+            );
+
+    const totalCalculado =
+
+        totalServicios +
+        totalRepuestos;
+
+    if (
+        Number(formData.total || 0)
+        !==
+        totalCalculado
+    ) {
+
+        setFormData(prev => ({
+
+            ...prev,
+
+            total: totalCalculado
+
+        }));
+
+    }
+
+}, [
+    formData.detalles,
+    formData.repuestos
+]);
+
+
 
     return (
 
@@ -519,21 +587,231 @@ const actualizarRepuesto = (
 
             <Col md={6}>
 
-                <Form.Group className="mb-3">
+<Form.Group className="mb-3">
 
-                    <Form.Label>
-                        Accesorios
-                    </Form.Label>
+    <Form.Label>
+        Accesorios Entregados
+    </Form.Label>
 
-                    <Form.Control
-                        name="accesorios"
-                        value={formData.accesorios}
-                        onChange={handleChange}
-                    />
+    {[
+        "Cargador",
+        "Batería",
+        "Mouse",
+        "Teclado",
+        "Mochila",
+        "Funda",
+        "Cable USB",
+        "Adaptador",
+        "Disco Externo",
+        "Memoria USB"
+    ].map(item => (
 
-                </Form.Group>
+        <Form.Check
+            key={item}
+            type="checkbox"
+            label={item}
+            checked={
+                (formData.accesorios || [])
+                    .includes(item)
+            }
+            onChange={(e) => {
+
+                const actuales =
+                    formData.accesorios || [];
+
+                if (e.target.checked) {
+
+                    setFormData(prev => ({
+
+                        ...prev,
+
+                        accesorios: [
+                            ...actuales,
+                            item
+                        ]
+
+                    }));
+
+                } else {
+
+                    setFormData(prev => ({
+
+                        ...prev,
+
+                        accesorios:
+                            actuales.filter(
+                                x => x !== item
+                            )
+
+                    }));
+
+                }
+
+            }}
+        />
+
+    ))}
+
+</Form.Group>
+
+<Form.Group className="mb-3 mt-4">
+
+    <Form.Label>
+        Checklist de Recepción
+    </Form.Label>
+
+    {[
+        "Pantalla rota",
+        "Marco golpeado",
+        "Tapa dañada",
+        "Puerto USB dañado",
+        "Puerto carga dañado",
+        "Equipo mojado",
+        "Equipo abierto",
+        "Bisagras dañadas",
+        "Teclas faltantes",
+        "Sin daños visibles"
+    ].map(item => (
+
+        <Form.Check
+            key={item}
+            type="checkbox"
+            label={item}
+            checked={
+                (formData.checklist_recepcion || [])
+                    .includes(item)
+            }
+            onChange={(e) => {
+
+                const actuales =
+                    formData.checklist_recepcion || [];
+
+                if (e.target.checked) {
+
+                    setFormData(prev => ({
+                        ...prev,
+                        checklist_recepcion: [
+                            ...actuales,
+                            item
+                        ]
+                    }));
+
+                } else {
+
+                    setFormData(prev => ({
+                        ...prev,
+                        checklist_recepcion:
+                            actuales.filter(
+                                x => x !== item
+                            )
+                    }));
+
+                }
+
+            }}
+        />
+
+    ))}
+
+</Form.Group>
 
             </Col>
+
+
+
+
+<Col md={6}>
+
+    <Card className="mb-3">
+
+        <Card.Header>
+
+           Subir Evidencia Fotográfica
+
+        </Card.Header>
+
+        <Card.Body>
+
+            <Form.Control
+                type="file"
+                multiple
+                onChange={handleArchivos}
+            />
+
+            <div className="mt-3">
+
+                {
+                    archivos?.length > 0 &&
+                    archivos.map((archivo, index) => (
+
+                        <div
+                            key={index}
+                            className="mb-2"
+                        >
+
+                            📷 {archivo.name}
+
+                        </div>
+
+                    ))
+                }
+
+            </div>
+
+        </Card.Body>
+
+        
+
+    </Card>
+
+    {
+    archivosExistentes?.length > 0 && (
+
+        <div className="mb-3">
+
+            <h6>
+                Fotos registradas
+            </h6>
+
+            <div className="row">
+
+                {
+                    archivosExistentes.map(
+                        archivo => (
+
+                            <div
+                                className="col-md-6 mb-3"
+                                key={archivo.id}
+                            >
+
+                                <img
+                                    src={
+                                        `http://127.0.0.1:8000/storage/${archivo.archivo}`
+                                    }
+                                    alt=""
+                                    className="img-fluid rounded border"
+                                    style={{
+                                        height: "220px",
+                                        width: "100%",
+                                        objectFit: "cover"
+                                    }}
+                                />
+
+                            </div>
+
+                        )
+                    )
+                }
+
+            </div>
+
+        </div>
+
+    )
+}
+
+</Col>
+            
 
             <Col md={6}>
 
@@ -638,7 +916,7 @@ const actualizarRepuesto = (
                         type="number"
                         name="total"
                         value={formData.total}
-                        onChange={handleChange}
+                        disabled
                     />
 
                 </Form.Group>

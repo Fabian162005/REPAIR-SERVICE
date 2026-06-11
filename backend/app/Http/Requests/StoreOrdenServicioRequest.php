@@ -30,6 +30,9 @@ class StoreOrdenServicioRequest extends FormRequest
             'accesorios' =>
                 'nullable|string',
 
+                'checklist_recepcion' =>
+    'nullable|string',
+
             'contrasena' =>
                 'nullable|string|max:100',
 
@@ -61,6 +64,25 @@ class StoreOrdenServicioRequest extends FormRequest
                 'nullable',
                 'in:RECEPCIONADO,DIAGNOSTICO,ESPERANDO_APROBACION,EN_REPARACION,REPARADO,ENTREGADO,CANCELADO'
             ],
+
+            'detalles' => 'nullable|array',
+
+            'detalles.*.descripcion' =>
+                'required|string',
+
+            'detalles.*.precio' =>
+                'required|numeric',
+
+            'repuestos' => 'nullable|array',
+
+            'repuestos.*.nombre' =>
+                'required|string',
+
+            'repuestos.*.cantidad' =>
+                'required|numeric',
+
+            'repuestos.*.precio_unitario' =>
+                'required|numeric',
         ];
     }
 }

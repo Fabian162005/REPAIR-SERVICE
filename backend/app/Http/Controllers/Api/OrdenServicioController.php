@@ -10,6 +10,7 @@ use App\Models\OrdenServicio;
 use Illuminate\Http\Request;
 use App\Models\OrdenServicioDetalle;
 use App\Models\OrdenRepuesto;
+use App\Models\OrdenArchivo;
 
 class OrdenServicioController extends Controller
 {
@@ -21,7 +22,8 @@ class OrdenServicioController extends Controller
             'cliente',
             'equipo',
             'usuario',
-            'tecnico'
+            'tecnico',
+            'archivos'
         ])
 
         ->when($buscar, function ($query) use ($buscar) {
@@ -149,7 +151,9 @@ if (!empty($request->repuestos)) {
 
             'detalles',
 
-            'repuestos'
+            'repuestos',
+
+            'archivos'
 
         ])->findOrFail($id);
 
@@ -175,10 +179,12 @@ if (!empty($request->repuestos)) {
     $data =
         $request->validated();
 
+      
     $data['saldo_pendiente'] =
         ($data['total'] ?? $orden->total)
         -
         ($data['adelanto'] ?? $orden->adelanto);
+
 
     // ACTUALIZAR SOLO UNA VEZ
     $orden->update($data);

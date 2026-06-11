@@ -1,6 +1,10 @@
 import { Modal, Button, Form } from "react-bootstrap";
 import { useEffect, useState } from "react";
 
+import {
+    subirArchivoOrden
+} from "../services/ordenArchivoService";
+
 import OrdenForm from "./OrdenForm";
 
 import {
@@ -16,6 +20,7 @@ import {
     getEquipos,
 } from "../../equipos/services/equipoService";
 
+
 const initialState = {
 
     cliente_id: "",
@@ -25,8 +30,10 @@ const initialState = {
 
     falla_reportada: "",
 
-    accesorios: "",
+    accesorios: [],
     contrasena: "",
+
+    checklist_recepcion: [],
 
     prioridad: "MEDIA",
 
@@ -49,6 +56,8 @@ const initialState = {
     repuestos: [],
 };
 
+
+
 export default function OrdenModal({
     show,
     handleClose,
@@ -68,6 +77,31 @@ export default function OrdenModal({
     const [formData, setFormData] =
         useState(initialState);
 
+    const [archivos, setArchivos] =
+        useState([]);
+
+    const [archivosExistentes, setArchivosExistentes] =
+            useState([]);
+
+const handleArchivos = (e) => {
+
+    const files =
+        Array.from(
+            e.target.files
+        );
+
+    if (files.length > 2) {
+
+        alert(
+            "Solo se permiten 2 fotos."
+        );
+
+        return;
+    }
+
+    setArchivos(files);
+};
+
     useEffect(() => {
 
         cargarClientes();
@@ -75,24 +109,41 @@ export default function OrdenModal({
 
     }, []);
 
-    useEffect(() => {
+useEffect(() => {
 
-        if (orden) {
+    if (orden) {
 
-            setFormData({
-                ...initialState,
-                ...orden,
-            });
+        setArchivosExistentes(
+            orden.archivos || []
+        );
 
-        } else {
+        setFormData({
+            ...initialState,
+            ...orden,
 
-            setFormData(
-                initialState
-            );
+            accesorios: orden.accesorios
+                ? JSON.parse(orden.accesorios)
+                : [],
 
-        }
+            checklist_recepcion:
+                orden.checklist_recepcion
+                    ? JSON.parse(
+                        orden.checklist_recepcion
+                    )
+                    : [],
+        });
 
-    }, [orden]);
+    } else {
+
+        setFormData(
+            initialState
+        );
+
+        setArchivosExistentes([]);
+
+    }
+
+}, [orden]);
 
     const cargarClientes = async () => {
 
@@ -137,7 +188,6 @@ export default function OrdenModal({
 
     const { name, value } = e.target;
 
-    console.log(name, value);
 
     setFormData(prev => ({
         ...prev,
@@ -145,54 +195,125 @@ export default function OrdenModal({
     }));
 };
 
-    const handleSubmit =
-        async (e) => {
+    const handleSubmit = async (e) => {
 
-            e.preventDefault();
+    e.preventDefault();
 
-            try {
+    try {
 
-                setLoading(true);
+        setLoading(true);
 
-                if (orden) {
+        if (orden) {
 
-                    await updateOrden(
-                        orden.id,
-                        formData
+            const payload = {
+
+                ...formData,
+
+                accesorios:
+                    JSON.stringify(
+                        formData.accesorios || []
+                    ),
+
+                checklist_recepcion:
+                    JSON.stringify(
+                        formData.checklist_recepcion || []
+                    )
+
+            };
+
+            await updateOrden(
+                orden.id,
+                payload
+            );
+
+        } else {
+
+            const payload = {
+
+                ...formData,
+
+                accesorios:
+                    JSON.stringify(
+                        formData.accesorios || []
+                    ),
+
+                checklist_recepcion:
+                    JSON.stringify(
+                        formData.checklist_recepcion || []
+                    )
+
+            };
+
+            const response =
+                await createOrden(
+                    payload
+                );
+
+            const ordenCreada =
+                response.data.orden;
+
+            if (
+                archivos.length > 0
+            ) {
+
+                for (const archivo of archivos)
+                {
+
+                    const formDataArchivo =
+                        new FormData();
+
+                    formDataArchivo.append(
+                        "orden_servicio_id",
+                        ordenCreada.id
                     );
 
-                } else {
+                    formDataArchivo.append(
+                        "tipo",
+                        "RECEPCION"
+                    );
 
-                    await createOrden(
-                        formData
+                    formDataArchivo.append(
+                        "archivo",
+                        archivo
+                    );
+
+                    await subirArchivoOrden(
+                        formDataArchivo
                     );
 
                 }
 
-              if (onSuccess) {
+            }
 
-                    await onSuccess();
+        }
 
-                }
+        if (onSuccess) {
 
-                handleClose();
-            } catch (error) {
+            await onSuccess();
 
-    console.error(error);
+        }
 
-    console.log(
-        error.response?.data
-    );
+        handleClose();
 
-    alert(
-        JSON.stringify(
-            error.response?.data,
-            null,
-            2
-        )
-    );
-}
-        };
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            JSON.stringify(
+                error.response?.data,
+                null,
+                2
+            )
+        );
+
+    } finally {
+
+        setLoading(false);
+
+    }
+
+};
 
     return (
 
@@ -229,6 +350,9 @@ export default function OrdenModal({
                         clientes={clientes}
                         equipos={equipos}
                         setFormData={setFormData}
+                        archivos={archivos}
+                        handleArchivos={handleArchivos}
+                        archivosExistentes={archivosExistentes}
                     />
 
                 </Modal.Body>

@@ -69,6 +69,7 @@ export default function OrdenDetalleModal({
     }
 };
 
+
     return (
 
         <Modal
@@ -261,6 +262,48 @@ export default function OrdenDetalleModal({
                             </Card.Body>
 
                         </Card>
+
+<Card className="mb-3">
+
+    <Card.Header>
+
+        Evidencia Fotográfica
+
+    </Card.Header>
+
+    <Card.Body>
+
+        <div className="row">
+
+{
+    orden.archivos?.map(
+        archivo => (
+
+            <div
+                className="col-md-6 mb-3"
+                key={archivo.id}
+            >
+
+                <img
+                    src={
+                        `http://127.0.0.1:8000/storage/${archivo.archivo}`
+                    }
+                    className="img-fluid rounded border"
+                    alt=""
+                />
+
+            </div>
+
+        )
+    )
+}
+
+</div>
+
+    </Card.Body>
+
+</Card>
+
 
                     </Col>
 
@@ -585,100 +628,156 @@ export default function OrdenDetalleModal({
 
                 <Card className="mt-3">
 
-    <Card.Header
-        className="bg-dark text-white"
-    >
-        Historial de Estados
-    </Card.Header>
+                <Card.Header
+                    className="bg-dark text-white"
+                >
+                    Timeline de la Orden
+                </Card.Header>
 
-    <Card.Body>
+                <Card.Body>
 
-        {
-            orden.estados?.length > 0 ? (
+                    {
+                        orden.estados?.length > 0 ? (
 
-                orden.estados.map(
-                    (item) => (
-
-                        <div
-                            key={item.id}
-                            className="border-start border-4 ps-3 mb-3"
-                        >
-
-                            <div className="d-flex justify-content-between align-items-center">
-
-                                <Badge
-                                    bg={
-                                        getBadgeColor(
-                                            item.estado
-                                        )
-                                    }
-                                >
-                                    {item.estado}
-                                </Badge>
-
-                                <small className="text-muted">
-
-                                    {
-                                        new Date(
-                                            item.created_at
-                                        ).toLocaleString(
-                                            "es-PE"
-                                        )
-                                    }
-
-                                </small>
-
-                            </div>
-
-                            <div className="mt-2">
-
-                                <strong>
-                                    Observación:
-                                </strong>
-
-                                {" "}
+                            <div className="position-relative">
 
                                 {
-                                    item.observacion ||
-                                    "-"
+                                    orden.estados.map(
+                                        (item, index) => (
+
+                                            <div
+                                                key={item.id}
+                                                className="d-flex mb-4"
+                                            >
+
+                                                {/* Columna izquierda */}
+
+                                                <div
+                                                    className="d-flex flex-column align-items-center me-3"
+                                                >
+
+                                                    <div
+                                                        className={`rounded-circle bg-${
+                                                            getBadgeColor(
+                                                                item.estado
+                                                            )
+                                                        }`}
+                                                        style={{
+                                                            width: "18px",
+                                                            height: "18px"
+                                                        }}
+                                                    />
+
+                                                    {
+                                                        index !==
+                                                        orden.estados.length - 1 && (
+
+                                                            <div
+                                                                style={{
+                                                                    width: "2px",
+                                                                    flex: 1,
+                                                                    minHeight: "50px",
+                                                                    background: "#dee2e6"
+                                                                }}
+                                                            />
+
+                                                        )
+                                                    }
+
+                                                </div>
+
+                                                {/* Contenido */}
+
+                                                <Card
+                                                    className="flex-grow-1 shadow-sm"
+                                                >
+
+                                                    <Card.Body>
+
+                                                        <div className="d-flex justify-content-between">
+
+                                                            <Badge
+                                                                bg={
+                                                                    getBadgeColor(
+                                                                        item.estado
+                                                                    )
+                                                                }
+                                                            >
+                                                                {item.estado}
+                                                            </Badge>
+
+                                                            <small className="text-muted">
+
+                                                                {
+                                                                    new Date(
+                                                                        item.created_at
+                                                                    ).toLocaleString(
+                                                                        "es-PE"
+                                                                    )
+                                                                }
+
+                                                            </small>
+
+                                                        </div>
+
+                                                        <hr />
+
+                                                        <div>
+
+                                                            <strong>
+                                                                Usuario:
+                                                            </strong>
+
+                                                            {" "}
+
+                                                            {
+                                                                item.usuario?.name ||
+                                                                "Sistema"
+                                                            }
+
+                                                        </div>
+
+                                                        <div>
+
+                                                            <strong>
+                                                                Observación:
+                                                            </strong>
+
+                                                            {" "}
+
+                                                            {
+                                                                item.observacion ||
+                                                                "-"
+                                                            }
+
+                                                        </div>
+
+                                                    </Card.Body>
+
+                                                </Card>
+
+                                            </div>
+
+                                        )
+                                    )
                                 }
 
                             </div>
 
-                            <div>
+                        ) : (
 
-                                <strong>
-                                    Usuario:
-                                </strong>
+                            <p className="text-muted">
 
-                                {" "}
+                                No existe historial.
 
-                                {
-                                    item.usuario?.name ||
-                                    "Sistema"
-                                }
+                            </p>
 
-                            </div>
+                        )
+                    }
 
-                        </div>
+                </Card.Body>
 
-                    )
-                )
-
-            ) : (
-
-                <p className="text-muted mb-0">
-
-                    No hay historial registrado.
-
-                </p>
-
-            )
-        }
-
-    </Card.Body>
-
-</Card>
+            </Card>
 
             </Modal.Body>
 

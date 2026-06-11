@@ -31,6 +31,9 @@ class UpdateOrdenServicioRequest extends FormRequest
             'accesorios' =>
                 'nullable|string',
 
+            'checklist_recepcion' =>
+                'nullable|string',
+
             'contrasena' =>
                 'nullable|string|max:100',
 

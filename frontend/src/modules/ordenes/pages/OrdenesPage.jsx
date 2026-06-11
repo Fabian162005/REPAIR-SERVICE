@@ -164,21 +164,22 @@ export default function OrdenesPage() {
                         Órdenes de Servicio
                     </h2>
 
+                   <div className="d-flex justify-content-between align-items-center mb-4">
+
                     <button
                         className="btn btn-primary"
                         onClick={() => {
 
-                            setOrdenEditar(
-                                null
-                            );
+                            setOrdenEditar(null);
 
-                            setShowModal(
-                                true
-                            );
+                            setShowModal(true);
+
                         }}
                     >
                         Nueva Orden
                     </button>
+
+                </div>
 
                 </div>
 
@@ -352,15 +353,28 @@ export default function OrdenesPage() {
 
                                                 <button
                                                     className="btn btn-warning btn-sm me-2"
-                                                    onClick={() => {
+                                                    onClick={async () => {
 
-                                                        setOrdenEditar(
-                                                            orden
-                                                        );
+                                                        try {
 
-                                                        setShowModal(
-                                                            true
-                                                        );
+                                                            const response =
+                                                                await getOrden(
+                                                                    orden.id
+                                                                );
+
+                                                            setOrdenEditar(
+                                                                response.data
+                                                            );
+
+                                                            setShowModal(
+                                                                true
+                                                            );
+
+                                                        } catch (error) {
+
+                                                            console.error(error);
+
+                                                        }
 
                                                     }}
                                                 >

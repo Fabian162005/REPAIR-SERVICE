@@ -48,6 +48,8 @@ class OrdenServicio extends Model
         'total',
         'adelanto',
         'saldo_pendiente',
+
+        'checklist_recepcion',
     ];
 
     protected $casts = [
@@ -108,4 +110,12 @@ class OrdenServicio extends Model
             OrdenRepuesto::class
         );
     }
+
+    public function archivos()
+{
+    return $this->hasMany(
+        OrdenArchivo::class
+    );
+}
+
 }
