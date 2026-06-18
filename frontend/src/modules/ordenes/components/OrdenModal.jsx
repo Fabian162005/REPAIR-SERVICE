@@ -109,6 +109,18 @@ const handleArchivos = (e) => {
 
     }, []);
 
+    const safeParse = (value) => {
+    if (!value) return [];
+
+    if (Array.isArray(value)) return value;
+
+    try {
+        return JSON.parse(value);
+    } catch (e) {
+        return [];
+    }
+};
+
 useEffect(() => {
 
     if (orden) {
@@ -121,24 +133,16 @@ useEffect(() => {
             ...initialState,
             ...orden,
 
-            accesorios: orden.accesorios
-                ? JSON.parse(orden.accesorios)
-                : [],
+            accesorios: safeParse(orden.accesorios),
 
-            checklist_recepcion:
+            checklist_recepcion: safeParse(
                 orden.checklist_recepcion
-                    ? JSON.parse(
-                        orden.checklist_recepcion
-                    )
-                    : [],
+            ),
         });
 
     } else {
 
-        setFormData(
-            initialState
-        );
-
+        setFormData(initialState);
         setArchivosExistentes([]);
 
     }

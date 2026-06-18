@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Models\OrdenServicioDetalle;
 use App\Models\OrdenRepuesto;
 use App\Models\OrdenArchivo;
+use App\Models\OrdenPago; 
 
 class OrdenServicioController extends Controller
 {
@@ -23,7 +24,8 @@ class OrdenServicioController extends Controller
             'equipo',
             'usuario',
             'tecnico',
-            'archivos'
+            'archivos',
+            'pagos'
         ])
 
         ->when($buscar, function ($query) use ($buscar) {
@@ -49,93 +51,105 @@ class OrdenServicioController extends Controller
         );
     }
 
-    public function store(
-        StoreOrdenServicioRequest $request
-    ) {
+public function store(StoreOrdenServicioRequest $request)
+{
+    $data = $request->validated();
 
-        $data = $request->validated();
+    // =========================
+    // 1. CODIGO
+    // =========================
+    $ultimoId = OrdenServicio::max('id') + 1;
 
-        $ultimoId =
-            OrdenServicio::max('id') + 1;
+    $data['codigo_orden'] =
+        ($data['tipo_rubro'] === 'VEHICULAR' ? 'MEC-' : 'TEC-')
+        . str_pad($ultimoId, 6, '0', STR_PAD_LEFT);
 
-        $data['codigo_orden'] =
-            ($data['tipo_rubro'] === 'VEHICULAR'
-                ? 'MEC-'
-                : 'TEC-')
-            .
-            str_pad(
-                $ultimoId,
-                6,
-                '0',
-                STR_PAD_LEFT
-            );
+    // =========================
+    // 2. ADELANTO INICIAL
+    // =========================
+    $adelantoInicial = (float) ($data['adelanto'] ?? 0);
 
-        $data['saldo_pendiente'] =
-            ($data['total'] ?? 0)
-            -
-            ($data['adelanto'] ?? 0);
+    // IMPORTANTE: no guardar duplicado en orden
+    $data['adelanto'] = 0;
 
-        $orden = OrdenServicio::create(
-            $data
-        );
+    // =========================
+    // 3. CREAR ORDEN
+    // =========================
+    $orden = OrdenServicio::create($data);
 
-        if (!empty($request->detalles)) {
-
-    foreach ($request->detalles as $detalle) {
-
+    // =========================
+    // 4. DETALLES
+    // =========================
+    foreach ($request->detalles ?? [] as $detalle) {
         OrdenServicioDetalle::create([
-
             'orden_servicio_id' => $orden->id,
-
             'descripcion' => $detalle['descripcion'],
-
             'precio' => $detalle['precio']
-
         ]);
     }
-}
 
-if (!empty($request->repuestos)) {
-
-    foreach ($request->repuestos as $repuesto) {
-
+    // =========================
+    // 5. REPUESTOS
+    // =========================
+    foreach ($request->repuestos ?? [] as $repuesto) {
         OrdenRepuesto::create([
-
             'orden_servicio_id' => $orden->id,
-
             'nombre' => $repuesto['nombre'],
-
             'cantidad' => $repuesto['cantidad'],
-
-            'precio_unitario' =>
-                $repuesto['precio_unitario'],
-
-            'subtotal' =>
-                $repuesto['subtotal']
-
+            'precio_unitario' => $repuesto['precio_unitario'],
+            'subtotal' => $repuesto['subtotal']
         ]);
     }
-}
 
-        OrdenEstado::create([
+    // =========================
+    // 6. ESTADO INICIAL
+    // =========================
+    OrdenEstado::create([
+        'orden_servicio_id' => $orden->id,
+        'usuario_id' => auth()->id(),
+        'estado' => $orden->estado_actual,
+        'observacion' => 'Orden creada',
+    ]);
 
+    // =========================
+    // 7. CREAR PAGO INICIAL
+    // =========================
+    if ($adelantoInicial > 0) {
+        OrdenPago::create([
             'orden_servicio_id' => $orden->id,
-
             'usuario_id' => auth()->id(),
-
-            'estado' => $orden->estado_actual,
-
-            'observacion' => 'Orden creada',
-
+            'monto' => $adelantoInicial,
+            'metodo_pago' => 'EFECTIVO',
+            'observacion' => 'Pago inicial'
         ]);
-
-        return response()->json([
-            'message' =>
-                'Orden creada correctamente',
-
-            'orden' => $orden
-        ], 201);
     }
+
+    // =========================
+    // 8. 🔥 RECONSTRUIR DESDE BD (ESTO ES LO CLAVE)
+    // =========================
+    $totalPagado = OrdenPago::where('orden_servicio_id', $orden->id)
+        ->sum('monto');
+
+    $total = (float) $orden->total;
+    $saldo = $total - $totalPagado;
+
+    // =========================
+    // 9. ACTUALIZAR ORDEN
+    // =========================
+    $orden->update([
+        'adelanto' => $totalPagado,
+        'saldo_pendiente' => $saldo,
+        'estado_pago' =>
+            $saldo <= 0
+                ? 'PAGADO'
+                : ($totalPagado > 0 ? 'PAGO_PARCIAL' : 'PENDIENTE_PAGO')
+    ]);
+
+    return response()->json([
+        'message' => 'Orden creada correctamente',
+        'orden' => $orden
+    ], 201);
+}
 
     public function show(string $id)
     {
@@ -153,7 +167,9 @@ if (!empty($request->repuestos)) {
 
             'repuestos',
 
-            'archivos'
+            'archivos',
+
+            'pagos'
 
         ])->findOrFail($id);
 

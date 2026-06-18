@@ -4,71 +4,110 @@ import {
     Col,
     Card,
     Badge,
-    Table
+    Table,
+    Button
 } from "react-bootstrap";
+
+import { useState, useEffect } from "react";
+import axios from "axios";
+
+import ModalRegistrarPago from "./ModalRegistrarPago";
 
 export default function OrdenDetalleModal({
     show,
     handleClose,
-    orden
+    orden,
+    onPagoRegistrado
 }) {
 
-    if (!orden) return null;
+    // =========================
+    // STATE (SIEMPRE ARRIBA)
+    // =========================
+    const [ordenLocal, setOrdenLocal] = useState(null);
+    const [showPago, setShowPago] = useState(false);
 
+    // =========================
+    // SYNC ORDEN PADRE -> LOCAL
+    // =========================
+    useEffect(() => {
+        setOrdenLocal(orden);
+    }, [orden]);
+
+    // =========================
+    // EARLY RETURN DESPUÉS DE HOOKS
+    // =========================
+    if (!ordenLocal) return null;
+
+    // =========================
+    // RECARGA ORDEN (API)
+    // =========================
+    const recargarOrden = async () => {
+        const res = await axios.get(
+            `/api/ordenes-servicio/${ordenLocal.id}`
+        );
+        return res.data;
+    };
+
+    // =========================
+    // ESTADO BLOQUEO PAGO
+    // =========================
+    const pagoBloqueado = ordenLocal?.estado_pago === "PAGADO";
+
+    // =========================
+    // COLOR ESTADO
+    // =========================
     const getEstadoColor = () => {
-
-        switch (orden.estado_actual) {
-
+        switch (ordenLocal.estado_actual) {
             case "RECEPCIONADO":
                 return "secondary";
-
             case "DIAGNOSTICO":
                 return "info";
-
             case "ESPERANDO_APROBACION":
                 return "warning";
-
             case "EN_REPARACION":
                 return "primary";
-
             case "REPARADO":
                 return "success";
-
             case "ENTREGADO":
                 return "dark";
-
             default:
                 return "danger";
         }
     };
 
     const getBadgeColor = (estado) => {
+        switch (estado) {
+            case "RECEPCIONADO":
+                return "secondary";
+            case "DIAGNOSTICO":
+                return "info";
+            case "ESPERANDO_APROBACION":
+                return "warning";
+            case "EN_REPARACION":
+                return "primary";
+            case "REPARADO":
+                return "success";
+            case "ENTREGADO":
+                return "dark";
+            default:
+                return "danger";
+        }
+    };
 
-    switch (estado) {
+    // =========================
+    // REFRESH DESDE PAGO
+    // =========================
+    const handlePagoRegistrado = async (nuevaOrden) => {
+        try {
+            const data = await recargarOrden();
 
-        case "RECEPCIONADO":
-            return "secondary";
+            setOrdenLocal(data);
+            onPagoRegistrado?.(data);
 
-        case "DIAGNOSTICO":
-            return "info";
-
-        case "ESPERANDO_APROBACION":
-            return "warning";
-
-        case "EN_REPARACION":
-            return "primary";
-
-        case "REPARADO":
-            return "success";
-
-        case "ENTREGADO":
-            return "dark";
-
-        default:
-            return "danger";
-    }
-};
-
+        } catch (error) {
+            console.error("Error recargando orden:", error);
+        }
+    };
 
     return (
 
@@ -85,7 +124,7 @@ export default function OrdenDetalleModal({
 
                     Orden:
                     {" "}
-                    {orden.codigo_orden}
+                    {ordenLocal.codigo_orden}
 
                 </Modal.Title>
 
@@ -108,21 +147,21 @@ export default function OrdenDetalleModal({
                                 <p>
                                     <strong>Nombre:</strong>
                                     {" "}
-                                    {orden.cliente?.nombres}
+                                    {ordenLocal.cliente?.nombres}
                                     {" "}
-                                    {orden.cliente?.apellidos}
+                                    {ordenLocal.cliente?.apellidos}
                                 </p>
 
                                 <p>
                                     <strong>Celular:</strong>
                                     {" "}
-                                    {orden.cliente?.celular}
+                                    {ordenLocal.cliente?.celular}
                                 </p>
 
                                 <p>
                                     <strong>Documento:</strong>
                                     {" "}
-                                    {orden.cliente?.numero_documento}
+                                    {ordenLocal.cliente?.numero_documento}
                                 </p>
 
                             </Card.Body>
@@ -144,25 +183,25 @@ export default function OrdenDetalleModal({
                                 <p>
                                     <strong>Marca:</strong>
                                     {" "}
-                                    {orden.equipo?.marca}
+                                    {ordenLocal.equipo?.marca}
                                 </p>
 
                                 <p>
                                     <strong>Modelo:</strong>
                                     {" "}
-                                    {orden.equipo?.modelo}
+                                    {ordenLocal.equipo?.modelo}
                                 </p>
 
                                 <p>
                                     <strong>IMEI:</strong>
                                     {" "}
-                                    {orden.equipo?.imei}
+                                    {ordenLocal.equipo?.imei}
                                 </p>
 
                                 <p>
                                     <strong>Serie:</strong>
                                     {" "}
-                                    {orden.equipo?.numero_serie}
+                                    {ordenLocal.equipo?.numero_serie}
                                 </p>
 
                             </Card.Body>
@@ -186,7 +225,7 @@ export default function OrdenDetalleModal({
                         </p>
 
                         <p>
-                            {orden.falla_reportada}
+                            {ordenLocal.falla_reportada}
                         </p>
 
                         <hr />
@@ -199,7 +238,7 @@ export default function OrdenDetalleModal({
 
                         <p>
                             {
-                                orden.diagnostico_preliminar
+                                ordenLocal.diagnostico_preliminar
                                 || "-"
                             }
                         </p>
@@ -214,7 +253,7 @@ export default function OrdenDetalleModal({
 
                         <p>
                             {
-                                orden.diagnostico_final
+                                ordenLocal.diagnostico_final
                                 || "-"
                             }
                         </p>
@@ -241,7 +280,7 @@ export default function OrdenDetalleModal({
                                     }
                                 >
                                     {
-                                        orden.estado_actual
+                                        ordenLocal.estado_actual
                                     }
                                 </Badge>
 
@@ -254,7 +293,7 @@ export default function OrdenDetalleModal({
                                     {" "}
 
                                     {
-                                        orden.prioridad
+                                        ordenLocal.prioridad
                                     }
 
                                 </div>
@@ -276,7 +315,7 @@ export default function OrdenDetalleModal({
         <div className="row">
 
 {
-    orden.archivos?.map(
+    ordenLocal.archivos?.map(
         archivo => (
 
             <div
@@ -315,6 +354,16 @@ export default function OrdenDetalleModal({
                                 Finanzas
                             </Card.Header>
 
+                            <Button
+                            size="sm"
+                            variant="success"
+                            onClick={() => setShowPago(true)}
+                            disabled={pagoBloqueado}
+                        >
+                            Registrar Pago
+                        </Button>
+
+
                             <Card.Body>
 
                                 <p>
@@ -322,7 +371,7 @@ export default function OrdenDetalleModal({
                                     {" "}
                                     S/
                                     {" "}
-                                    {orden.total}
+                                    {ordenLocal.total}
                                 </p>
 
                                 <p>
@@ -330,7 +379,7 @@ export default function OrdenDetalleModal({
                                     {" "}
                                     S/
                                     {" "}
-                                    {orden.adelanto}
+                                    {ordenLocal.adelanto}
                                 </p>
 
                                 <p>
@@ -341,9 +390,20 @@ export default function OrdenDetalleModal({
                                     S/
                                     {" "}
                                     {
-                                        orden.saldo_pendiente
+                                        ordenLocal.saldo_pendiente
                                     }
                                 </p>
+
+                                <Badge bg={
+                                    ordenLocal.estado_pago === "PAGADO"
+                                        ? "success"
+                                        : ordenLocal.estado_pago === "PAGO_PARCIAL"
+                                        ? "warning"
+                                        : "danger"
+                                }>
+                                    {ordenLocal.estado_pago}
+                                </Badge>
+
 
                             </Card.Body>
 
@@ -360,7 +420,7 @@ export default function OrdenDetalleModal({
                             <Card.Body>
 
                                 {
-                                    orden.detalles?.length > 0
+                                    ordenLocal.detalles?.length > 0
                                     ? (
 
                                         <Table
@@ -391,7 +451,7 @@ export default function OrdenDetalleModal({
                                             <tbody>
 
                                                 {
-                                                    orden.detalles.map(
+                                                    ordenLocal.detalles.map(
                                                         (
                                                             item
                                                         ) => (
@@ -461,7 +521,7 @@ export default function OrdenDetalleModal({
                         <Card.Body>
 
                             {
-                                orden.repuestos?.length > 0
+                                ordenLocal.repuestos?.length > 0
                                 ? (
 
                                     <Table
@@ -498,7 +558,7 @@ export default function OrdenDetalleModal({
                                         <tbody>
 
                                             {
-                                                orden.repuestos.map(
+                                                ordenLocal.repuestos.map(
                                                     (
                                                         item
                                                     ) => (
@@ -602,7 +662,7 @@ export default function OrdenDetalleModal({
 
                         <p>
                             {
-                                orden.observaciones_cliente
+                                ordenLocal.observaciones_cliente
                                 || "-"
                             }
                         </p>
@@ -617,7 +677,7 @@ export default function OrdenDetalleModal({
 
                         <p>
                             {
-                                orden.observaciones_tecnico
+                                ordenLocal.observaciones_tecnico
                                 || "-"
                             }
                         </p>
@@ -637,12 +697,12 @@ export default function OrdenDetalleModal({
                 <Card.Body>
 
                     {
-                        orden.estados?.length > 0 ? (
+                        ordenLocal.estados?.length > 0 ? (
 
                             <div className="position-relative">
 
                                 {
-                                    orden.estados.map(
+                                    ordenLocal.estados.map(
                                         (item, index) => (
 
                                             <div
@@ -670,7 +730,7 @@ export default function OrdenDetalleModal({
 
                                                     {
                                                         index !==
-                                                        orden.estados.length - 1 && (
+                                                        ordenLocal.estados.length - 1 && (
 
                                                             <div
                                                                 style={{
@@ -780,6 +840,13 @@ export default function OrdenDetalleModal({
             </Card>
 
             </Modal.Body>
+
+            <ModalRegistrarPago
+                show={showPago}
+                onHide={() => setShowPago(false)}
+                orden={orden}
+                onPagoRegistrado={handlePagoRegistrado}
+            />
 
         </Modal>
 

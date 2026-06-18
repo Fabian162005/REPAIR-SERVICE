@@ -152,6 +152,24 @@ export default function OrdenesPage() {
             }
         };
 
+
+        const recargarOrdenDetalle = async () => {
+
+    if (!ordenDetalle?.id) return;
+
+    try {
+
+        const response = await getOrden(ordenDetalle.id);
+
+        setOrdenDetalle(response.data);
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+};
+
     return (
 
         <DashboardLayout>
@@ -442,13 +460,11 @@ export default function OrdenesPage() {
             }
 
             <OrdenDetalleModal
-                show={showDetalle}
-                handleClose={() =>
-                    setShowDetalle(false)
-                }
-                orden={ordenDetalle}
-            />
-
+    show={showDetalle}
+    handleClose={() => setShowDetalle(false)}
+    orden={ordenDetalle}
+    onPagoRegistrado={recargarOrdenDetalle}
+/>
         </DashboardLayout>
 
     );

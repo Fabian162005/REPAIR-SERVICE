@@ -1,0 +1,18 @@
+$kind: http-request
+name: CREAR PAGO
+url: http://127.0.0.1:8000//api/orden-pagos
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"orden_servicio_id\": 14,\r
+
+    \    \"monto\": 50,\r
+
+    \    \"metodo_pago\": \"YAPE\",\r
+
+    \    \"observacion\": \"Primer abono\"\r
+
+    }"
+order: 1781758049436

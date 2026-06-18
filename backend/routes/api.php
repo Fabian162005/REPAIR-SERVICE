@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClienteController;
 use App\Http\Controllers\Api\EquipoController;
 use App\Http\Controllers\Api\OrdenArchivoController;
+use App\Http\Controllers\Api\OrdenPagoController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -21,6 +22,21 @@ Route::post(
         'orden-archivos/{id}',
         [OrdenArchivoController::class, 'destroy']
     );
+
+    Route::get(
+    'orden-pagos/{ordenId}',
+    [OrdenPagoController::class, 'index']
+);
+
+Route::post(
+    'orden-pagos',
+    [OrdenPagoController::class, 'store']
+);
+
+Route::delete(
+    'orden-pagos/{id}',
+    [OrdenPagoController::class, 'destroy']
+);
 
 Route::middleware('auth:sanctum')->group(function () {
 

@@ -118,4 +118,11 @@ class OrdenServicio extends Model
     );
 }
 
+public function pagos()
+{
+    return $this->hasMany(
+        OrdenPago::class
+    );
+}
+
 }
