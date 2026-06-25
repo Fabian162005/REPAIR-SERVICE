@@ -1,0 +1,29 @@
+$kind: http-request
+name: ACTUALIZAR MOVIMIENTOS
+url: http://127.0.0.1:8000/api/movimientos-caja/1
+method: PATCH
+headers:
+  Content-Type: " application/json"
+  Accept: application/json
+body:
+  type: json
+  content: "{\r
+
+    \  \"tipo_movimiento\": \"EGRESO\",\r
+
+    \  \"origen\": \"AJUSTE\",\r
+
+    \  \"tipo_rubro\": \"TECNOLOGIA\",\r
+
+    \  \"usuario_id\": 1,\r
+
+    \  \"monto\": 150,\r
+
+    \  \"descripcion\": \"Actualizado desde Postman\",\r
+
+    \  \"observacion\": \"Test update\",\r
+
+    \  \"fecha_movimiento\": \"2026-06-25 10:00:00\"\r
+
+    }"
+order: 4412828960470519

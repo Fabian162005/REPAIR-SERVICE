@@ -86,7 +86,7 @@ public function store(Request $request)
             ]
         ]);
     });
-}
+}   
 
     public function destroy($id)
     {

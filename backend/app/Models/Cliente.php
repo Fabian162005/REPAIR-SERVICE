@@ -44,5 +44,13 @@ class Cliente extends Model
         OrdenServicio::class
     );
 }
+
+
+public function vehiculos()
+{
+    return $this->hasMany(
+        Vehiculo::class
+    );
+}
 }
 

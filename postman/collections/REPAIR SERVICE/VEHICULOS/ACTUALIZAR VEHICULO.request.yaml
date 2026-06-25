@@ -1,0 +1,35 @@
+$kind: http-request
+url: http://127.0.0.1:8000/api/vehiculos/1
+method: PUT
+body:
+  type: json
+  content: "{\r
+
+    \    \"cliente_id\": 1,\r
+
+    \    \"tipo_vehiculo\": \"CARRO\",\r
+
+    \    \"placa\": \"P2A-123\",\r
+
+    \    \"marca\": \"Toyota\",\r
+
+    \    \"modelo\": \"Corolla\",\r
+
+    \    \"anio\": 2022,\r
+
+    \    \"numero_motor\": \"MTR123456\",\r
+
+    \    \"numero_chasis\": \"CHS987654\",\r
+
+    \    \"combustible\": \"GASOLINA\",\r
+
+    \    \"cilindrada\": \"1800\",\r
+
+    \    \"color\": \"Negro\",\r
+
+    \    \"kilometraje\": 50000,\r
+
+    \    \"observaciones\": \"Actualizado desde Postman\"\r
+
+    }"
+order: 2694723031182856

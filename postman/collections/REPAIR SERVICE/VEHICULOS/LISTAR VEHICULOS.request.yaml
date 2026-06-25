@@ -1,0 +1,5 @@
+$kind: http-request
+name: LISTAR VEHICULOS
+url: http://127.0.0.1:8000/api/vehiculos
+method: GET
+order: 1490383856995315

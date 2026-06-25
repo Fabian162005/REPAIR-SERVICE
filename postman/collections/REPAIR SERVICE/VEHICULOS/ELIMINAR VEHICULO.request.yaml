@@ -1,0 +1,5 @@
+$kind: http-request
+name: ELIMINAR VEHICULO
+url: http://127.0.0.1:8000/api/vehiculos/1
+method: DELETE
+order: 3878973889690056

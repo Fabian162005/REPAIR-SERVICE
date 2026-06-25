@@ -125,4 +125,20 @@ public function pagos()
     );
 }
 
+public function vehiculo()
+{
+    return $this->belongsTo(
+        Vehiculo::class,
+        'vehiculo_id'
+    );
+}
+
+public function movimientosCaja()
+{
+    return $this->hasMany(
+        MovimientoCaja::class,
+        'orden_servicio_id'
+    );
+}
+
 }

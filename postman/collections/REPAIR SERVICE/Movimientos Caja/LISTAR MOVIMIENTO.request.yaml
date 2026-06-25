@@ -1,0 +1,4 @@
+$kind: http-request
+url: http://127.0.0.1:8000/api/movimientos-caja
+method: GET
+order: 1782363393273

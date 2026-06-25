@@ -1,0 +1,39 @@
+$kind: http-request
+name: INSERTAR VEHICULOS
+url: http://127.0.0.1:8000/api/vehiculos
+method: POST
+headers:
+  Content-Type: application/json
+  Accept: application/json
+body:
+  type: json
+  content: "{\r
+
+    \    \"cliente_id\": 1,\r
+
+    \    \"tipo_vehiculo\": \"MOTO_LINEAL\",\r
+
+    \    \"placa\": \"P2-1580\",\r
+
+    \    \"marca\": \"Honda\",\r
+
+    \    \"modelo\": \"CRF230\",\r
+
+    \    \"anio\": 2023,\r
+
+    \    \"numero_motor\": \"HONDA230001\",\r
+
+    \    \"numero_chasis\": \"CRF230CHASIS001\",\r
+
+    \    \"combustible\": \"GASOLINA\",\r
+
+    \    \"cilindrada\": \"230\",\r
+
+    \    \"color\": \"Naranja\",\r
+
+    \    \"kilometraje\": 12000,\r
+
+    \    \"observaciones\": \"Moto registrada para mantenimiento preventivo\"\r
+
+    }"
+order: 1782360750176
