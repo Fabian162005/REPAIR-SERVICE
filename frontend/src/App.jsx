@@ -5,31 +5,36 @@ import {
   Navigate
 } from "react-router-dom";
 
+import { useRubro } from "./context/RubroContext";
 
 import LoginPage from "./modules/auth/pages/LoginPage";
 import DashboardPage from "./modules/dashboard/pages/DashboardPage";
 import ClientesPage from "./modules/clientes/pages/ClientesPage";
 import EquiposPage from "./modules/equipos/pages/EquiposPage";
-import DashboardLayout from "./layouts/DashboardLayout";
+import VehiculosPage from "./modules/vehiculos/VehiculosPage";
 import OrdenesPage from "./modules/ordenes/pages/OrdenesPage";
 
+import DashboardLayout from "./layouts/DashboardLayout";
 import useAuthStore from "./store/authStore";
 
-function App() {
+function AppRoutes() {
 
   const token = useAuthStore((state) => state.token);
+  const { rubro } = useRubro();
+
+  const EquiposOrVehiculos =
+    rubro === "TECNOLOGIA"
+      ? EquiposPage
+      : VehiculosPage;
 
   return (
-
     <BrowserRouter>
-
       <Routes>
 
-        <Route
-          path="/"
-          element={<LoginPage />}
-        />
+        {/* LOGIN */}
+        <Route path="/" element={<LoginPage />} />
 
+        {/* DASHBOARD */}
         <Route
           path="/dashboard"
           element={
@@ -43,7 +48,7 @@ function App() {
           }
         />
 
-
+        {/* CLIENTES */}
         <Route
           path="/clientes"
           element={
@@ -57,12 +62,13 @@ function App() {
           }
         />
 
+        {/* EQUIPOS / VEHÍCULOS (DINÁMICO POR RUBRO) */}
         <Route
           path="/equipos"
           element={
             token ? (
               <DashboardLayout>
-                <EquiposPage />
+                <EquiposOrVehiculos />
               </DashboardLayout>
             ) : (
               <Navigate to="/" />
@@ -70,19 +76,23 @@ function App() {
           }
         />
 
+        {/* ORDENES */}
         <Route
-            path="/ordenes"
-            element={<OrdenesPage />}
+          path="/ordenes"
+          element={
+            token ? (
+              <DashboardLayout>
+                <OrdenesPage />
+              </DashboardLayout>
+            ) : (
+              <Navigate to="/" />
+            )
+          }
         />
 
-    
-
       </Routes>
-
     </BrowserRouter>
-
   );
-
 }
 
-export default App;
+export default AppRoutes;

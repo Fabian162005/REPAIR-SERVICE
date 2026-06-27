@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
-import DashboardLayout from "../../../layouts/DashboardLayout";
 
 import OrdenModal from "../components/OrdenModal";
 import OrdenDetalleModal from "../components/OrdenDetalleModal";
@@ -172,7 +171,7 @@ export default function OrdenesPage() {
 
     return (
 
-        <DashboardLayout>
+      <div>
 
             <div className="container-fluid">
 
@@ -465,7 +464,7 @@ export default function OrdenesPage() {
     orden={ordenDetalle}
     onPagoRegistrado={recargarOrdenDetalle}
 />
-        </DashboardLayout>
+      </div>
 
     );
 }
