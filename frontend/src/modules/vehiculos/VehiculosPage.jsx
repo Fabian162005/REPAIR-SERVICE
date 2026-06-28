@@ -1,10 +1,29 @@
 import { useEffect, useState } from "react";
 import api from "../../api/axios";
+import VehiculoModal from "./components/VehiculoModal";
+import EliminarVehiculoModal from "./components/EliminarVehiculoModal";
+
+import {
+getVehiculos
+} from "./services/vehiculoService";
 
 function VehiculosPage() {
 
     const [vehiculos, setVehiculos] = useState([]);
     const [loading, setLoading] = useState(true);
+
+
+    const [showModal,setShowModal]=
+    useState(false);
+
+    const [showEliminar,setShowEliminar]=
+    useState(false);
+
+    const [vehiculoEditar,setVehiculoEditar]=
+    useState(null);
+
+    const [vehiculoEliminar,setVehiculoEliminar]=
+    useState(null);
 
     const cargarVehiculos = async () => {
 
@@ -12,7 +31,8 @@ function VehiculosPage() {
 
             setLoading(true);
 
-            const res = await api.get("/vehiculos");
+            const res =
+            await getVehiculos();
 
             setVehiculos(res.data);
 
@@ -50,7 +70,27 @@ function VehiculosPage() {
 
             {!loading && vehiculos.length > 0 && (
 
+
+
                 <div className="table-responsive">
+
+                    <button
+                    className="btn btn-success mb-4 me-5"
+
+                    onClick={()=>{
+
+                    setVehiculoEditar(null);
+
+                    setShowModal(true);
+
+                    }}
+
+                    >
+
+                    Nuevo Vehículo
+
+                    </button>
+                                        
 
                     <table className="table table-hover">
 
@@ -65,7 +105,9 @@ function VehiculosPage() {
                                 <th>Año</th>
                                 <th>Tipo</th>
                                 <th>Combustible</th>
+                                <th>Acciones</th>
 
+                               
                             </tr>
 
                         </thead>
@@ -78,7 +120,7 @@ function VehiculosPage() {
 
                                     <td>{v.placa}</td>
 
-                                    <td>{v.cliente?.nombre}</td>
+                                    <td>{`${v.cliente?.nombres || ""} ${v.cliente?.apellidos || ""}`}</td>
 
                                     <td>{v.marca}</td>
 
@@ -90,6 +132,43 @@ function VehiculosPage() {
 
                                     <td>{v.combustible || "-"}</td>
 
+                                    <td>
+
+                                                                    <button
+                                                                    className="btn btn-warning btn-sm me-2"
+
+                                                                    onClick={()=>{
+
+                                                                    setVehiculoEditar(v);
+
+                                                                    setShowModal(true);
+
+                                                                    }}
+
+                                                                    >
+
+                                                                    Editar
+
+                                                                    </button>
+
+                                                                    <button
+                                                                    className="btn btn-danger btn-sm"
+
+                                                                    onClick={()=>{
+
+                                                                    setVehiculoEliminar(v);
+
+                                                                    setShowEliminar(true);
+
+                                                                    }}
+
+                                                                    >
+
+                                                                    Eliminar
+
+                                                                    </button>
+
+                                                                    </td>
                                 </tr>
 
                             ))}
@@ -98,6 +177,42 @@ function VehiculosPage() {
 
                     </table>
 
+                    <VehiculoModal
+
+                    show={showModal}
+
+                    handleClose={()=>
+                    setShowModal(false)
+                    }
+
+                    vehiculo={
+                    vehiculoEditar
+                    }
+
+                    onSuccess={
+                    cargarVehiculos
+                    }
+
+                    />
+
+                    <EliminarVehiculoModal
+
+                    show={showEliminar}
+
+                    handleClose={()=>
+                    setShowEliminar(false)
+                    }
+
+                    vehiculo={
+                    vehiculoEliminar
+                    }
+
+                    onSuccess={
+                    cargarVehiculos
+                    }
+
+                    />
+
                 </div>
 
             )}
@@ -105,7 +220,10 @@ function VehiculosPage() {
         </div>
 
     );
+    
 
 }
+
+
 
 export default VehiculosPage;
