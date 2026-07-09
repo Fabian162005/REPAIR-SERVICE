@@ -21,6 +21,12 @@ class OrdenServicio extends Model
         'equipo_id',
         'vehiculo_id',
 
+        'recepcion_vehicular',
+        'diagnostico_vehicular',
+        'checklist_vehicular',
+        'servicios_vehiculares',
+        'proximo_mantenimiento',
+
         'tipo_recepcion',
 
         'falla_reportada',
@@ -65,6 +71,16 @@ class OrdenServicio extends Model
         'adelanto' => 'decimal:2',
 
         'saldo_pendiente' => 'decimal:2',
+
+        'recepcion_vehicular' => 'array',
+
+        'diagnostico_vehicular' => 'array',
+
+        'checklist_vehicular' => 'array',
+
+        'servicios_vehiculares' => 'array',
+
+        'proximo_mantenimiento' => 'array',
     ];
 
     public function cliente()

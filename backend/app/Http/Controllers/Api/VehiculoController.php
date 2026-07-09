@@ -8,13 +8,26 @@ use Illuminate\Http\Request;
 
 class VehiculoController extends Controller
 {
-    public function index()
-    {
-        return Vehiculo::with('cliente')
-            ->where('activo', true)
-            ->latest()
-            ->get();
+   public function index(Request $request)
+{
+    $query = Vehiculo::with('cliente')
+        ->where('activo', true);
+
+
+    if ($request->cliente_id) {
+
+        $query->where(
+            'cliente_id',
+            $request->cliente_id
+        );
+
     }
+
+
+    return $query
+        ->latest()
+        ->paginate(10);
+}
 
     public function store(Request $request)
     {

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import OrdenModal from "../components/OrdenModal";
 import OrdenDetalleModal from "../components/OrdenDetalleModal";
+import { useRubro } from "../../../context/RubroContext";
 
 import {
     getOrden,
@@ -12,6 +13,8 @@ import {
 } from "../services/ordenService";
 
 export default function OrdenesPage() {
+
+    const { rubro } = useRubro();
 
     const [ordenes, setOrdenes] =
         useState([]);
@@ -34,20 +37,26 @@ export default function OrdenesPage() {
 
     const navigate = useNavigate()
 
-    const cargarOrdenes = async () => {
+   const cargarOrdenes = async () => {
 
     try {
 
         const response =
             await getOrdenes(buscar);
 
-        console.log(
-            response.data.data
-        );
+
+        const ordenesFiltradas =
+            (response.data.data || [])
+                .filter(
+                    (orden) =>
+                        orden.tipo_rubro === rubro
+                );
+
 
         setOrdenes(
-            response.data.data || []
+            ordenesFiltradas
         );
+
 
     } catch (error) {
 
@@ -55,12 +64,11 @@ export default function OrdenesPage() {
 
     }
 };
-
     useEffect(() => {
 
-        cargarOrdenes();
+    cargarOrdenes();
 
-    }, []);
+}, [rubro]);
 
     const handleBuscar = (
         e
@@ -177,8 +185,10 @@ export default function OrdenesPage() {
 
                 <div className="d-flex justify-content-between align-items-center mb-4">
 
-                    <h2>
-                        Órdenes de Servicio
+                   <h2>
+                        {rubro === "TECNOLOGIA"
+                            ? "Órdenes Tecnología"
+                            : "Órdenes Vehiculares"}
                     </h2>
 
                    <div className="d-flex justify-content-between align-items-center mb-4">
@@ -248,7 +258,7 @@ export default function OrdenesPage() {
                                 </th>
 
                                 <th>
-                                    Equipo
+                                    {rubro === "TECNOLOGIA" ? "Equipo" : "Vehículo"}
                                 </th>
 
                                 <th>
@@ -301,13 +311,27 @@ export default function OrdenesPage() {
                                             </td>
 
                                             <td>
+
                                                 {
-                                                    orden.equipo?.marca
-                                                }{" "}
-                                                {
-                                                    orden.equipo?.modelo
+                                                    rubro === "TECNOLOGIA"
+
+                                                    ?
+
+                                                    <>
+                                                        {orden.equipo?.marca}{" "}
+                                                        {orden.equipo?.modelo}
+                                                    </>
+
+                                                    :
+
+                                                    <>
+                                                        {orden.vehiculo?.marca}{" "}
+                                                        {orden.vehiculo?.modelo}
+                                                    </>
+
                                                 }
-                                            </td>
+
+                                                </td>
 
                                           <td>
 

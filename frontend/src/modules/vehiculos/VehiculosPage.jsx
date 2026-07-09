@@ -34,7 +34,9 @@ function VehiculosPage() {
             const res =
             await getVehiculos();
 
-            setVehiculos(res.data);
+setVehiculos(
+    res.data.data || res.data
+);
 
         } catch (error) {
 

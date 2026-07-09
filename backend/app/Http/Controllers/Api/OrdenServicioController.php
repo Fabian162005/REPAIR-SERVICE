@@ -22,6 +22,7 @@ class OrdenServicioController extends Controller
         $ordenes = OrdenServicio::with([
             'cliente',
             'equipo',
+            'vehiculo',
             'usuario',
             'tecnico',
             'archivos',
@@ -54,6 +55,29 @@ class OrdenServicioController extends Controller
 public function store(StoreOrdenServicioRequest $request)
 {
     $data = $request->validated();
+
+    // =========================
+// DATOS VEHICULARES
+// =========================
+
+if (($data['tipo_rubro'] ?? null) === 'VEHICULAR') {
+
+    $data['recepcion_vehicular'] =
+        $request->recepcion_vehicular;
+
+    $data['diagnostico_vehicular'] =
+        $request->diagnostico_vehicular;
+
+    $data['checklist_vehicular'] =
+        $request->checklist_vehicular;
+
+    $data['servicios_vehiculares'] =
+        $request->servicios_vehiculares;
+
+    $data['proximo_mantenimiento'] =
+        $request->proximo_mantenimiento;
+
+}
 
     // =========================
     // 1. CODIGO
@@ -157,6 +181,7 @@ public function store(StoreOrdenServicioRequest $request)
 
             'cliente',
             'equipo',
+            'vehiculo',
 
             'usuario',
             'tecnico',
@@ -194,6 +219,25 @@ public function store(StoreOrdenServicioRequest $request)
 
     $data =
         $request->validated();
+
+        if (($data['tipo_rubro'] ?? null) === 'VEHICULAR') {
+
+    $data['recepcion_vehicular'] =
+        $request->recepcion_vehicular;
+
+    $data['diagnostico_vehicular'] =
+        $request->diagnostico_vehicular;
+
+    $data['checklist_vehicular'] =
+        $request->checklist_vehicular;
+
+    $data['servicios_vehiculares'] =
+        $request->servicios_vehiculares;
+
+    $data['proximo_mantenimiento'] =
+        $request->proximo_mantenimiento;
+
+}
 
       
     $data['saldo_pendiente'] =

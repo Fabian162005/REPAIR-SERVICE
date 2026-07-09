@@ -1,0 +1,9 @@
+export const ESTADOS_ORDEN = [
+    "RECEPCIONADO",
+    "DIAGNOSTICO",
+    "ESPERANDO_APROBACION",
+    "EN_REPARACION",
+    "REPARADO",
+    "ENTREGADO",
+    "CANCELADO"
+];

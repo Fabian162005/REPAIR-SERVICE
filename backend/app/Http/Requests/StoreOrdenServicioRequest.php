@@ -19,7 +19,10 @@ class StoreOrdenServicioRequest extends FormRequest
                 'required|exists:clientes,id',
 
             'equipo_id' =>
-                'nullable|exists:equipos,id',
+                'required_if:tipo_rubro,TECNOLOGIA|nullable|exists:equipos,id',
+
+            'vehiculo_id' =>
+                'required_if:tipo_rubro,VEHICULAR|nullable|exists:vehiculos,id',
 
             'tipo_rubro' =>
                 'required|in:TECNOLOGIA,VEHICULAR',
@@ -31,7 +34,22 @@ class StoreOrdenServicioRequest extends FormRequest
                 'nullable|string',
 
                 'checklist_recepcion' =>
-    'nullable|string',
+            'nullable|string',
+
+            'recepcion_vehicular' =>
+            'nullable|array',
+
+        'diagnostico_vehicular' =>
+            'nullable|array',
+
+        'checklist_vehicular' =>
+            'nullable|array',
+
+        'servicios_vehiculares' =>
+            'nullable|array',
+
+        'proximo_mantenimiento' =>
+            'nullable|array',
 
             'contrasena' =>
                 'nullable|string|max:100',
