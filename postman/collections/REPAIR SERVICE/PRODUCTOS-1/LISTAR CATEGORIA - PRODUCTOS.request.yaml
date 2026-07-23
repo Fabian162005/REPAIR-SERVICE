@@ -1,0 +1,5 @@
+$kind: http-request
+name: LISTAR CATEGORIA - PRODUCTOS
+url: http://127.0.0.1:8000/api/categorias-producto
+method: GET
+order: 3818996901085943

@@ -1,0 +1,8 @@
+$kind: http-request
+name: BUSCAR PRODUCTO
+description: EL NUMERO 1 ES EL ID DEL PRODUCTO
+url: http://127.0.0.1:8000/api/productos/1
+method: GET
+headers:
+  Accept: application/json
+order: 3000

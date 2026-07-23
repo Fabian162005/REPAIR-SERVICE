@@ -1,0 +1,13 @@
+$kind: http-request
+name: BORRAR PRODUCTO
+description: |-
+  ESTA FUNCION NO BORRA EL PRODUCTO
+
+  SOLO LO DESACTIVA DE
+
+  ACTIVE = FALSE
+url: http://127.0.0.1:8000/api/productos/3
+method: DELETE
+headers:
+  Accept: application/json
+order: 1257

@@ -1,0 +1,9 @@
+$kind: http-request
+name: LISTAR PRODUCTOS
+url: http://127.0.0.1:8000/api/productos
+method: GET
+headers:
+  Accept: application/json
+queryParams:
+  "": ""
+order: 4000

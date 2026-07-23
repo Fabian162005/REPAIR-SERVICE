@@ -9,6 +9,8 @@ use App\Http\Controllers\Api\OrdenArchivoController;
 use App\Http\Controllers\Api\OrdenPagoController;
 use App\Http\Controllers\Api\VehiculoController;
 use App\Http\Controllers\Api\MovimientoCajaController;
+use App\Http\Controllers\Api\CategoriaProductoController;
+use App\Http\Controllers\Api\ProductoController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -49,6 +51,14 @@ Route::delete(
     'orden-pagos/{id}',
     [OrdenPagoController::class, 'destroy']
 );
+
+
+Route::apiResource(
+    'categorias-producto',
+    CategoriaProductoController::class
+);
+
+Route::apiResource('productos', ProductoController::class);
 
 
 Route::middleware('auth:sanctum')->group(function () {

@@ -17,6 +17,8 @@ import OrdenesPage from "./modules/ordenes/pages/OrdenesPage";
 import DashboardLayout from "./layouts/DashboardLayout";
 import useAuthStore from "./store/authStore";
 
+import ProductosPage from "./modules/inventario/pages/ProductosPage";
+
 function AppRoutes() {
 
   const token = useAuthStore((state) => state.token);
@@ -89,6 +91,19 @@ function AppRoutes() {
             )
           }
         />
+
+        <Route
+              path="/productos"
+              element={
+                  token ? (
+                      <DashboardLayout>
+                          <ProductosPage />
+                      </DashboardLayout>
+                  ) : (
+                      <Navigate to="/" />
+                  )
+              }
+          />
 
       </Routes>
     </BrowserRouter>

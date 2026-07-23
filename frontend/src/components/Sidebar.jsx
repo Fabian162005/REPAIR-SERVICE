@@ -68,12 +68,16 @@ const sidebarStyle = {
                 </Link>
 
                 {/* INVENTARIO */}
-                <a className="sidebar-link" href="#">
+
+                <Link 
+                    className="sidebar-link" 
+                    to="/productos"
+                >
                     {rubro === "TECNOLOGIA"
                         ? "Inventario"
                         : "Repuestos de Vehículos"
                     }
-                </a>
+                </Link>
 
                 <a className="sidebar-link" href="#">
                     Usuarios

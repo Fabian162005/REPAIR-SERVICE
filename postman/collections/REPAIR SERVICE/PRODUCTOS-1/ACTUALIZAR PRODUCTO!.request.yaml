@@ -1,0 +1,36 @@
+$kind: http-request
+name: ACTUALIZAR PRODUCTO!
+description: |-
+  ESTA FUNCION NO ACTUALIZA EL STOCK, SOLO SUS DATOS
+
+  SUS DATOS SOLO CAMBIAN POR MOVIMIENTOS DE INVENTARIO.
+url: http://127.0.0.1:8000/api/productos/4
+method: PUT
+headers:
+  Accept: application/json
+body:
+  type: json
+  content: "{\r
+
+    \    \"nombre\": \"Filtro de Aceite Toyota\", //nombre del producto\r
+
+    \    \"descripcion\": \"Filtro motor Toyota Yaris\",  // descripcion\r
+
+    \    \"categoria_id\": 4, //aqui eligues la cateogira a la que lo vas a actualizar \r
+
+    \    \"precio_compra\": 25,\r
+
+    \    \"precio_venta\": 45,\r
+
+    \    \"stock_actual\": 30,\r
+
+    \    \"stock_minimo\": 10,\r
+
+    \    \"unidad_medida\": \"Unidad\",\r
+
+    \    \"activo\": true\r
+
+    \r
+
+    }"
+order: 2000
