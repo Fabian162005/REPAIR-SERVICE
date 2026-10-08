@@ -93,14 +93,17 @@ class StoreOrdenServicioRequest extends FormRequest
 
             'repuestos' => 'nullable|array',
 
+            'repuestos.*.producto_id' =>
+                'nullable|exists:productos,id',
+
             'repuestos.*.nombre' =>
-                'required|string',
+                'required_without:repuestos.*.producto_id|nullable|string',
 
             'repuestos.*.cantidad' =>
-                'required|numeric',
+                'required|integer|min:1',
 
             'repuestos.*.precio_unitario' =>
-                'required|numeric',
+                'required|numeric|min:0',
         ];
     }
 }

@@ -10,20 +10,24 @@ class StoreInventarioMovimientoRequest extends FormRequest
     /**
      * Determine if the user is authorized to make this request.
      */
-    public function authorize(): bool
-    {
-        return false;
-    }
+   public function authorize(): bool { return true; }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            //
+            'tipo_movimiento' => 'required|in:ENTRADA,SALIDA',
+            'cantidad'        => 'required|integer|min:1',
+            'motivo'          => 'required|string|max:100',
+            'observaciones'   => 'nullable|string|max:500',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'tipo_movimiento.in' => 'El tipo debe ser ENTRADA o SALIDA.',
+            'cantidad.min'       => 'La cantidad debe ser mayor a 0.',
+            'motivo.required'    => 'Debe indicar el motivo.',
         ];
     }
 }

@@ -71,6 +71,7 @@ export const limpiarPayloadOrden = (formData) => ({
 
     detalles: formData.detalles || [],
 
-    repuestos: formData.repuestos || [],
-
+    repuestos: (formData.repuestos || []).filter(
+        r => r.producto_id || r.nombre
+    ),
 });

@@ -33,9 +33,7 @@ const productoService = {
             const response =
                 await productosApi.getById(id);
 
-
             return response.data.data;
-
 
         }catch(error){
 
@@ -58,9 +56,7 @@ const productoService = {
             const response =
                 await productosApi.create(data);
 
-
             return response.data;
-
 
         }catch(error){
 
@@ -86,9 +82,7 @@ const productoService = {
                     data
                 );
 
-
             return response.data;
-
 
         }catch(error){
 
@@ -111,9 +105,7 @@ const productoService = {
             const response =
                 await productosApi.remove(id);
 
-
             return response.data;
-
 
         }catch(error){
 
@@ -125,6 +117,32 @@ const productoService = {
             throw error;
 
         }
+
+    },
+
+
+    // MOVIMIENTOS (sin try/catch a propósito:
+    // el componente necesita el error original para mostrar el 422 en Swal)
+
+    async listarMovimientos(id){
+
+        const response =
+            await productosApi.getMovimientos(id);
+
+        return response.data.data;
+
+    },
+
+
+    async registrarMovimiento(id,data){
+
+        const response =
+            await productosApi.crearMovimiento(
+                id,
+                data
+            );
+
+        return response.data;
 
     }
 

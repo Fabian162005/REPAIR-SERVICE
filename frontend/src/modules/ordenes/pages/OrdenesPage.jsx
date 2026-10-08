@@ -6,6 +6,8 @@ import OrdenModal from "../components/OrdenModal";
 import OrdenDetalleModal from "../components/OrdenDetalleModal";
 import { useRubro } from "../../../context/RubroContext";
 
+import obtenerMensajeError from "../../../utils/obtenerMensajeError";
+
 import {
     getOrden,
     getOrdenes,
@@ -60,9 +62,14 @@ export default function OrdenesPage() {
 
     } catch (error) {
 
-        console.error(error);
+    console.error(error);
 
-    }
+    Swal.fire(
+        "Error",
+        obtenerMensajeError(error, "No se pudo eliminar la orden."),
+        "error"
+    );
+}
 };
     useEffect(() => {
 
@@ -96,9 +103,14 @@ export default function OrdenesPage() {
 
     } catch (error) {
 
-        console.error(error);
+    console.error(error);
 
-    }
+    Swal.fire(
+        "Error",
+        obtenerMensajeError(error, "No se pudo eliminar la orden."),
+        "error"
+    );
+}
 };
 
     const handleEliminar =
@@ -156,6 +168,11 @@ export default function OrdenesPage() {
 
                 console.error(error);
 
+                Swal.fire(
+                    "Error",
+                    obtenerMensajeError(error, "No se pudo eliminar la orden."),
+                    "error"
+                );
             }
         };
 
@@ -415,6 +432,11 @@ export default function OrdenesPage() {
 
                                                             console.error(error);
 
+                                                            Swal.fire(
+                                                                "Error",
+                                                                obtenerMensajeError(error, "No se pudo eliminar la orden."),
+                                                                "error"
+                                                            );
                                                         }
 
                                                     }}

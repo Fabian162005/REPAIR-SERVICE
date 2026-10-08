@@ -10,4 +10,4 @@ url: http://127.0.0.1:8000/api/productos/3
 method: DELETE
 headers:
   Accept: application/json
-order: 1257
+order: 1000

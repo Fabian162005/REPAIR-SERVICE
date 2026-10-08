@@ -1,0 +1,5 @@
+$kind: http-request
+name: LISTAR CATEGORIA - PRODUCTOS
+url: http://127.0.0.1:8000/api/productos/1/movimientos
+method: GET
+order: 8437

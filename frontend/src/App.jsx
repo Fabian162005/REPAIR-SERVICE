@@ -17,8 +17,7 @@ import OrdenesPage from "./modules/ordenes/pages/OrdenesPage";
 import DashboardLayout from "./layouts/DashboardLayout";
 import useAuthStore from "./store/authStore";
 
-import ProductosPage from "./modules/inventario/pages/ProductosPage";
-
+import ProductosPage from "./modules/Inventario/pages/ProductosPage";
 function AppRoutes() {
 
   const token = useAuthStore((state) => state.token);

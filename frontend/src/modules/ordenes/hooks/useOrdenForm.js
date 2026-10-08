@@ -8,6 +8,9 @@ import useDetalleOrden from "./useDetalleOrden";
 import useCatalogosOrden from "./useCatalogosOrden";
 import { useRubro } from "../../../context/RubroContext";
 
+import Swal from "sweetalert2";
+import obtenerMensajeError from "../../../utils/obtenerMensajeError";
+
 import {
     safeParse,
     calcularTotal,
@@ -147,7 +150,7 @@ useEffect(() => {
         const files = Array.from(e.target.files);
 
         if (files.length > 2) {
-            alert("Solo se permiten 2 fotos.");
+            Swal.fire("Límite de fotos", "Solo se permiten 2 fotos.", "warning");
             return;
         }
 
@@ -220,18 +223,20 @@ useEffect(() => {
                 onClose();
             }
         } catch (error) {
-            console.error(error);
 
-            alert(
-                JSON.stringify(
-                    error.response?.data || error.message,
-                    null,
-                    2
-                )
-            );
-        } finally {
-            setLoading(false);
-        }
+    console.error(error);
+
+    Swal.fire(
+        "No se pudo guardar la orden",
+        obtenerMensajeError(error),
+        "error"
+    );
+
+    // No se cierra el modal: el usuario corrige la cantidad sin perder lo escrito.
+
+} finally {
+    setLoading(false);
+}
     };
 
     return {

@@ -16,7 +16,8 @@ body:
 
     \    \"descripcion\": \"Filtro motor Toyota Yaris\",  // descripcion\r
 
-    \    \"categoria_id\": 4, //aqui eligues la cateogira a la que lo vas a actualizar \r
+    \    \"categoria_id\": 4, //aqui eligues la cateogira a la que lo vas a
+    actualizar \r
 
     \    \"precio_compra\": 25,\r
 

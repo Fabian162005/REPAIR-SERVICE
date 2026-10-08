@@ -1,6 +1,7 @@
 ﻿import { Row, Col, Form, Button, Table, Card } from "react-bootstrap";
 import { ACCESORIOS_TECNOLOGIA } from "../constants/accesoriosTecnologia";
 import { CHECKLIST_TECNOLOGIA } from "../constants/checklistTecnologia";
+import RepuestosTabla from "../components/RepuestosTabla";
 
 export default function TecnologiaForm({
     formData,
@@ -103,48 +104,7 @@ export default function TecnologiaForm({
                     </Table>
                 </Col>
 
-                <Col md={12}>
-                    <div className="d-flex justify-content-between align-items-center mb-3">
-                        <h5>Repuestos Utilizados</h5>
-                        <Button size="sm" variant="success" onClick={agregarRepuesto}>
-                            + Repuesto
-                        </Button>
-                    </div>
-                    <Table bordered>
-                        <thead>
-                            <tr>
-                                <th>Nombre</th>
-                                <th width="100">Cantidad</th>
-                                <th width="120">P.Unit</th>
-                                <th width="120">Subtotal</th>
-                                <th width="80">Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {(formData.repuestos || []).map((item, index) => (
-                                <tr key={index}>
-                                    <td>
-                                        <Form.Control value={item.nombre} onChange={(e) => actualizarRepuesto(index, "nombre", e.target.value)} />
-                                    </td>
-                                    <td>
-                                        <Form.Control type="number" value={item.cantidad} onChange={(e) => actualizarRepuesto(index, "cantidad", e.target.value)} />
-                                    </td>
-                                    <td>
-                                        <Form.Control type="number" value={item.precio_unitario} onChange={(e) => actualizarRepuesto(index, "precio_unitario", e.target.value)} />
-                                    </td>
-                                    <td>
-                                        <Form.Control value={item.subtotal} disabled />
-                                    </td>
-                                    <td>
-                                        <Button variant="danger" size="sm" onClick={() => eliminarRepuesto(index)}>
-                                            X
-                                        </Button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </Table>
-                </Col>
+                <RepuestosTabla formData={formData} setFormData={setFormData} />
 
                 <Col md={6}>
                     <Form.Group className="mb-3">

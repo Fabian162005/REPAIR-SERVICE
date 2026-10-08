@@ -37,8 +37,7 @@ class UpdateProductoRequest extends FormRequest
 
             'codigo_barras' => 'nullable|string|max:100',
 
-            'activo' => 'required|boolean',
-
+            'activo' => 'sometimes|boolean',
         ];
     }
 

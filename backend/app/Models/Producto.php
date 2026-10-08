@@ -49,10 +49,10 @@ class Producto extends Model
         return $this->hasMany(InventarioMovimiento::class, 'producto_id');
     }
 
-  //  public function ordenRepuestos()
-   // {
-   //     return $this->hasMany(OrdenRepuesto::class, 'producto_id');
-  //  }
+  public function ordenRepuestos()
+   {
+        return $this->hasMany(OrdenRepuesto::class, 'producto_id');
+   }
 
     /*
     |--------------------------------------------------------------------------
