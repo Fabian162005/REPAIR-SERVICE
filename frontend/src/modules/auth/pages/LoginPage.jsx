@@ -31,13 +31,13 @@ function LoginPage() {
 
     } catch (error) {
 
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Credenciales incorrectas"
-      });
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: error.response?.data?.message || "No se pudo iniciar sesión"
+    });
 
-    }
+  }
 
   };
 

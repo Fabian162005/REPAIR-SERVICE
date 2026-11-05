@@ -13,15 +13,18 @@ import ClientesPage from "./modules/clientes/pages/ClientesPage";
 import EquiposPage from "./modules/equipos/pages/EquiposPage";
 import VehiculosPage from "./modules/vehiculos/VehiculosPage";
 import OrdenesPage from "./modules/ordenes/pages/OrdenesPage";
-
 import DashboardLayout from "./layouts/DashboardLayout";
 import useAuthStore from "./store/authStore";
-
 import ProductosPage from "./modules/Inventario/pages/ProductosPage";
+import CajaPage from "./modules/caja/pages/CajaPage";
+import VentasRepuestoPage from "./modules/ventas/pages/VentasRepuestoPage";
+import UsuariosPage from "./modules/usuarios/pages/UsuariosPage";
+
 function AppRoutes() {
 
   const token = useAuthStore((state) => state.token);
   const { rubro } = useRubro();
+const user = useAuthStore((state) => state.user);
 
   const EquiposOrVehiculos =
     rubro === "TECNOLOGIA"
@@ -103,6 +106,45 @@ function AppRoutes() {
                   )
               }
           />
+
+          <Route
+            path="/caja"
+            element={
+                token ? (
+                    <DashboardLayout>
+                        <CajaPage />
+                    </DashboardLayout>
+                ) : (
+                    <Navigate to="/" />
+                )
+            }
+        />
+
+        <Route
+        path="/ventas"
+        element={
+            token ? (
+                <DashboardLayout>
+                    <VentasRepuestoPage />
+                </DashboardLayout>
+            ) : (
+                <Navigate to="/" />
+            )
+        }
+    />
+
+    <Route
+    path="/usuarios"
+    element={
+        token && user?.rol === "ADMIN" ? (
+            <DashboardLayout>
+                <UsuariosPage />
+            </DashboardLayout>
+        ) : (
+            <Navigate to="/" />
+        )
+    }
+/>
 
       </Routes>
     </BrowserRouter>

@@ -41,6 +41,7 @@ export const ORDEN_INITIAL_STATE={
     proximo_indicaciones: "",
     total: 0,
     adelanto: 0,
+    metodo_pago_adelanto: "EFECTIVO",
     estado_actual: "RECEPCIONADO",
     diagnostico_preliminar: "",
     diagnostico_final: "",

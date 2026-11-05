@@ -5,98 +5,123 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\OrdenPago;
 use App\Models\OrdenServicio;
+use App\Services\CajaService;
+use DomainException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Auditoria;
+use App\Services\PermisoService;
 
 class OrdenPagoController extends Controller
 {
+    
+public function __construct(
+    private CajaService $cajaService,
+    private PermisoService $permiso
+) {}
+
     public function index($ordenId)
     {
-        $pagos = OrdenPago::with(
-            'usuario'
-        )
-        ->where(
-            'orden_servicio_id',
-            $ordenId
-        )
-        ->latest()
-        ->get();
+        $pagos = OrdenPago::with('usuario')
+            ->where('orden_servicio_id', $ordenId)
+            ->latest()
+            ->get();
 
-        return response()->json([
-            'success' => true,
-            'data' => $pagos
-        ]);
+        return response()->json(['success' => true, 'data' => $pagos]);
     }
-public function store(Request $request)
-{
-    $request->validate([
-        'orden_servicio_id' => 'required|exists:orden_servicios,id',
-        'monto' => 'required|numeric|min:0.01',
-        'metodo_pago' => 'required|in:EFECTIVO,YAPE,PLIN,TRANSFERENCIA,TARJETA',
-        'observacion' => 'nullable|string'
-    ]);
 
-    return DB::transaction(function () use ($request) {
+    public function store(Request $request)
+    {
+        $request->validate([
+            'orden_servicio_id' => 'required|exists:orden_servicios,id',
+            'monto'       => 'required|numeric|min:0.01',
+            'metodo_pago' => 'required|in:EFECTIVO,YAPE,PLIN,TRANSFERENCIA,TARJETA,OTROS',
+            'observacion' => 'nullable|string',
+        ]);
 
-        $orden = OrdenServicio::findOrFail($request->orden_servicio_id);
+        try {
+            DB::transaction(function () use ($request) {
 
-        if ($orden->estado_pago === 'PAGADO') {
-            return response()->json([
-                'success' => false,
-                'message' => 'La orden ya está completamente pagada'
-            ], 422);
+                $orden = OrdenServicio::lockForUpdate()->findOrFail($request->orden_servicio_id);
+
+                if ($orden->estado_pago === 'PAGADO') {
+                    throw new DomainException('La orden ya está completamente pagada.');
+                }
+
+                $pago = OrdenPago::create([
+                    'orden_servicio_id' => $orden->id,
+                    'usuario_id'        => auth()->id(),
+                    'monto'             => $request->monto,
+                    'metodo_pago'       => $request->metodo_pago,
+                    'observacion'       => $request->observacion,
+                ]);
+
+                // Ingreso automático a la caja de quien cobra
+                $this->cajaService->ingresoPorPago($pago, $orden);
+
+                $this->recalcular($orden);
+            });
+
+        } catch (DomainException $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
         }
 
-        // 1. CREAR PAGO
-        OrdenPago::create([
-            'orden_servicio_id' => $orden->id,
-            'usuario_id' => auth()->id(),
-            'monto' => $request->monto,
-            'metodo_pago' => $request->metodo_pago,
-            'observacion' => $request->observacion
-        ]);
+        return response()->json(['success' => true, 'message' => 'Pago registrado correctamente']);
+    }
 
-        // 2. RECIÉN AQUÍ CALCULAR TODO
-        $totalPagado = OrdenPago::where('orden_servicio_id', $orden->id)->sum('monto');
+   public function destroy(Request $request, $id)
+{
+    $pago = OrdenPago::findOrFail($id);
 
-        $saldo = (float) $orden->total - (float) $totalPagado;
+    try {
+        $forzar = false;
 
-        // 3. DEBUG (IMPORTANTE)
-        \Log::info("TOTAL PAGADO: ".$totalPagado);
-        \Log::info("SALDO: ".$saldo);
+        if ($request->filled('clave_permiso')) {
+            $this->permiso->verificar($request->clave_permiso);
+            $forzar = true;
+        }
 
-        // 4. UPDATE FORZADO
-        $orden->adelanto = $totalPagado;
+        DB::transaction(function () use ($pago, $forzar) {
+
+            $orden = OrdenServicio::lockForUpdate()->findOrFail($pago->orden_servicio_id);
+
+            $this->cajaService->anularPorPago($pago, $forzar);
+
+            if ($forzar) {
+                Auditoria::registrar('ELIMINAR_PAGO', 'pago', $pago->id, [
+                    'orden_id' => $pago->orden_servicio_id,
+                    'monto'    => (float) $pago->monto,
+                    'metodo'   => $pago->metodo_pago,
+                ]);
+            }
+
+            $pago->delete();
+
+            $this->recalcular($orden);
+        });
+
+    } catch (DomainException $e) {
+        return response()->json([
+            'success'        => false,
+            'message'        => $e->getMessage(),
+            'requiere_clave' => $e->getCode() === PermisoService::REQUIERE_CLAVE,
+        ], 422);
+    }
+
+    return response()->json(['success' => true, 'message' => 'Pago eliminado']);
+}
+
+    private function recalcular(OrdenServicio $orden): void
+    {
+        $totalPagado = (float) OrdenPago::where('orden_servicio_id', $orden->id)->sum('monto');
+        $saldo = (float) $orden->total - $totalPagado;
+
+        $orden->adelanto        = $totalPagado;
         $orden->saldo_pendiente = max($saldo, 0);
-
-        $orden->estado_pago =
-            $saldo <= 0
-                ? 'PAGADO'
-                : ($totalPagado > 0 ? 'PAGO_PARCIAL' : 'PENDIENTE_PAGO');
+        $orden->estado_pago     = $saldo <= 0
+            ? 'PAGADO'
+            : ($totalPagado > 0 ? 'PAGO_PARCIAL' : 'PENDIENTE_PAGO');
 
         $orden->save();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Pago registrado correctamente',
-            'debug' => [
-                'total_pagado' => $totalPagado,
-                'saldo' => $saldo,
-                'estado_pago' => $orden->estado_pago
-            ]
-        ]);
-    });
-}   
-
-    public function destroy($id)
-    {
-        $pago = OrdenPago::findOrFail($id);
-
-        $pago->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Pago eliminado'
-        ]);
     }
 }

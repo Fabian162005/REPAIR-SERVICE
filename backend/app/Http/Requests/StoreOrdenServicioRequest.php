@@ -80,7 +80,7 @@ class StoreOrdenServicioRequest extends FormRequest
 
             'estado_actual' => [
                 'nullable',
-                'in:RECEPCIONADO,DIAGNOSTICO,ESPERANDO_APROBACION,EN_REPARACION,REPARADO,ENTREGADO,CANCELADO'
+                'in:RECEPCIONADO,DIAGNOSTICO,ESPERANDO_APROBACION,EN_REPARACION,REPARADO,ENTREGADO'
             ],
 
             'detalles' => 'nullable|array',
@@ -104,6 +104,8 @@ class StoreOrdenServicioRequest extends FormRequest
 
             'repuestos.*.precio_unitario' =>
                 'required|numeric|min:0',
+
+            'metodo_pago_adelanto' => 'nullable|in:EFECTIVO,YAPE,PLIN,TARJETA,TRANSFERENCIA,OTROS',
         ];
     }
 }

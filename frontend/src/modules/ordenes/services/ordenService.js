@@ -14,3 +14,7 @@ export const updateOrden = (id, data) =>
 
 export const deleteOrden = (id) =>
     api.delete(`/ordenes-servicio/${id}`);
+
+export const cambiarEstadoOrden = (id, data) =>
+    api.patch(`/ordenes-servicio/${id}/estado`, data);
+

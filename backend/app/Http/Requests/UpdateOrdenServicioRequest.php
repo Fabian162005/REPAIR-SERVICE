@@ -81,7 +81,7 @@ class UpdateOrdenServicioRequest extends FormRequest
 
            'estado_actual' => [
                 'nullable',
-                'in:RECEPCIONADO,DIAGNOSTICO,ESPERANDO_APROBACION,EN_REPARACION,REPARADO,ENTREGADO,CANCELADO'
+                'in:RECEPCIONADO,DIAGNOSTICO,ESPERANDO_APROBACION,EN_REPARACION,REPARADO,ENTREGADO'
             ],
 
             'detalles' => 'nullable|array',
@@ -105,6 +105,8 @@ class UpdateOrdenServicioRequest extends FormRequest
 
             'repuestos.*.precio_unitario' =>
                 'required|numeric|min:0',
+
+            'clave_permiso' => 'nullable|string'
 
         ];
     }

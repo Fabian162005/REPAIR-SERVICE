@@ -13,6 +13,7 @@ import ProductoFilters from "../components/ProductoFilters";
 import ProductoModal from "../components/ProductoModal";
 import MovimientoModal from "../components/MovimientoModal";
 import MovimientosPanel from "../components/MovimientosPanel";
+import useAuthStore from "../../../store/authStore";
 
 import categoriaService
 from "../services/categoriaService";
@@ -35,6 +36,8 @@ function ProductosPage(){
     const [modoEdicion,setModoEdicion] = useState(false);
 
     const [categorias,setCategorias] = useState([]);
+
+    const esAdmin = useAuthStore((s) => s.user?.rol) === "ADMIN";
 
     // MOVIMIENTOS
     const [prodMov,setProdMov] = useState(null);
@@ -289,20 +292,11 @@ function ProductosPage(){
 
                 </div>
 
-                <button
-                    className="btn btn-primary"
-                    onClick={()=>{
-                        setProducto(productoInicial);
-                        setModoEdicion(false);
-                        setMostrarModal(true);
-                    }}
-                >
-
-                    <i className="bi bi-plus-circle"></i>
-                    {" "}
-                    Nuevo Producto
-
-                </button>
+                {esAdmin && (
+                    <button className="btn btn-primary" onClick={() => { /* tu onClick actual */ }}>
+                        <i className="bi bi-plus-circle"></i> Nuevo Producto
+                    </button>
+                )}
 
             </div>
 
@@ -324,6 +318,7 @@ function ProductosPage(){
 
                     <ProductoTable
                         productos={productosFiltrados}
+                        esAdmin={esAdmin}
                         onEditar={editarProducto}
                         onEliminar={eliminarProducto}
                         onMovimiento={setProdMov}
@@ -369,4 +364,4 @@ function ProductosPage(){
 }
 
 
-export default ProductosPage;
+export default ProductosPage;   

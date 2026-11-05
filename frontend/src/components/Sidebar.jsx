@@ -1,24 +1,27 @@
 import { Link } from "react-router-dom";
 import { useRubro } from "../context/RubroContext";
+import useAuthStore from "../store/authStore";
 
 function Sidebar() {
 
     const { rubro } = useRubro();
 
+    const user = useAuthStore((state) => state.user);
+    const esAdmin = user?.rol === "ADMIN";
 
-const sidebarStyle = {
-    width: "260px",
-    minHeight: "100vh",
-    padding: "25px 20px",
-    color: "white",
-    position: "fixed",
-    left: 0,
-    top: 0,
-    transition: "all .3s ease",
-    background: rubro === "TECNOLOGIA"
-        ? "#0182fd"   // azul oscuro técnico
-        : "#006400"   // verde oscuro taller vehicular
-};
+    const sidebarStyle = {
+        width: "260px",
+        minHeight: "100vh",
+        padding: "25px 20px",
+        color: "white",
+        position: "fixed",
+        left: 0,
+        top: 0,
+        transition: "all .3s ease",
+        background: rubro === "TECNOLOGIA"
+            ? "#0182fd"   // azul oscuro técnico
+            : "#006400"   // verde oscuro taller vehicular
+    };
 
     return (
 
@@ -68,20 +71,28 @@ const sidebarStyle = {
                 </Link>
 
                 {/* INVENTARIO */}
-
-                <Link 
-                    className="sidebar-link" 
-                    to="/productos"
-                >
+                <Link className="sidebar-link" to="/productos">
                     {rubro === "TECNOLOGIA"
                         ? "Inventario"
                         : "Repuestos de Vehículos"
                     }
                 </Link>
 
-                <a className="sidebar-link" href="#">
-                    Usuarios
-                </a>
+                {/* CAJA */}
+                <Link className="sidebar-link" to="/caja">
+                    Caja
+                </Link>
+
+                {/* USUARIOS (solo admin) */}
+                {esAdmin && (
+                    <Link className="sidebar-link" to="/usuarios">
+                        Usuarios
+                    </Link>
+                )}
+                                
+                <Link className="sidebar-link" to="/ventas">
+                    Venta de repuestos
+                </Link>
 
             </div>
 

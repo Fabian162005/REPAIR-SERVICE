@@ -14,6 +14,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'rol',
+        'activo',
     ];
 
     protected $hidden = [
@@ -23,5 +25,6 @@ class User extends Authenticatable
 
     protected $casts = [
         'password' => 'hashed',
+        'activo'   => 'boolean',
     ];
 }

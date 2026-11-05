@@ -208,9 +208,7 @@ useEffect(() => {
                         ENTREGADO
                     </option>
 
-                    <option value="CANCELADO">
-                        CANCELADO
-                    </option>
+
 
                 </Form.Select>
 
@@ -281,23 +279,42 @@ useEffect(() => {
             </Col>
 
             <Col md={4}>
-
                 <Form.Group className="mb-3">
-
-                    <Form.Label>
-                        Adelanto
-                    </Form.Label>
-
+                    <Form.Label>Adelanto</Form.Label>
                     <Form.Control
                         type="number"
                         name="adelanto"
                         value={formData.adelanto}
                         onChange={handleChange}
+                        disabled={!!formData.id}
                     />
-
+                    {formData.id && (
+                        <small className="text-muted">
+                            Para cobrar más usa "Registrar Pago" en el detalle.
+                        </small>
+                    )}
                 </Form.Group>
-
             </Col>
+
+            {!formData.id && Number(formData.adelanto) > 0 && (
+                <Col md={4}>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Método del adelanto</Form.Label>
+                        <Form.Select
+                            name="metodo_pago_adelanto"
+                            value={formData.metodo_pago_adelanto}
+                            onChange={handleChange}
+                        >
+                            <option value="EFECTIVO">EFECTIVO</option>
+                            <option value="YAPE">YAPE</option>
+                            <option value="PLIN">PLIN</option>
+                            <option value="TARJETA">TARJETA</option>
+                            <option value="TRANSFERENCIA">TRANSFERENCIA</option>
+                            <option value="OTROS">OTROS</option>
+                        </Form.Select>
+                    </Form.Group>
+                </Col>
+            )}
 
             <Col md={4}>
 

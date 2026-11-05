@@ -9,7 +9,7 @@ import {
 } from "react-bootstrap";
 
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../../api/axios";
 
 import ModalRegistrarPago from "./ModalRegistrarPago";
 
@@ -42,11 +42,9 @@ export default function OrdenDetalleModal({
     // RECARGA ORDEN (API)
     // =========================
     const recargarOrden = async () => {
-        const res = await axios.get(
-            `/api/ordenes-servicio/${ordenLocal.id}`
-        );
-        return res.data;
-    };
+    const res = await api.get(`/ordenes-servicio/${ordenLocal.id}`);
+    return res.data;
+};
 
     // =========================
     // ESTADO BLOQUEO PAGO
@@ -844,7 +842,7 @@ export default function OrdenDetalleModal({
             <ModalRegistrarPago
                 show={showPago}
                 onHide={() => setShowPago(false)}
-                orden={orden}
+                orden={ordenLocal}
                 onPagoRegistrado={handlePagoRegistrado}
             />
 

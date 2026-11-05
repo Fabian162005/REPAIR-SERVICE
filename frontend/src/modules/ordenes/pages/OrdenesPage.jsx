@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";
 
 import OrdenModal from "../components/OrdenModal";
 import OrdenDetalleModal from "../components/OrdenDetalleModal";
 import { useRubro } from "../../../context/RubroContext";
+import useAuthStore from "../../../store/authStore";
 
 import obtenerMensajeError from "../../../utils/obtenerMensajeError";
 
@@ -12,212 +12,230 @@ import {
     getOrden,
     getOrdenes,
     deleteOrden,
+    cambiarEstadoOrden,
 } from "../services/ordenService";
+
+const ESTADOS = [
+    "RECEPCIONADO",
+    "DIAGNOSTICO",
+    "ESPERANDO_APROBACION",
+    "EN_REPARACION",
+    "REPARADO",
+    "ENTREGADO",
+];
+
+const claseEstado = (estado) => {
+    switch (estado) {
+        case "RECEPCIONADO": return "badge bg-secondary";
+        case "DIAGNOSTICO": return "badge bg-info";
+        case "ESPERANDO_APROBACION": return "badge bg-warning text-dark";
+        case "EN_REPARACION": return "badge bg-primary";
+        case "REPARADO": return "badge bg-success";
+        case "ENTREGADO": return "badge bg-dark";
+        default: return "badge bg-danger";
+    }
+};
 
 export default function OrdenesPage() {
 
     const { rubro } = useRubro();
 
-    const [ordenes, setOrdenes] =
-        useState([]);
+    const esAdmin = useAuthStore((s) => s.user?.rol) === "ADMIN";
 
-    const [buscar, setBuscar] =
-        useState("");
+    const [ordenes, setOrdenes] = useState([]);
+    const [buscar, setBuscar] = useState("");
+    const [showModal, setShowModal] = useState(false);
+    const [ordenEditar, setOrdenEditar] = useState(null);
+    const [showDetalle, setShowDetalle] = useState(false);
+    const [ordenDetalle, setOrdenDetalle] = useState(null);
 
-    const [showModal, setShowModal] =
-        useState(false);
+    const cargarOrdenes = async () => {
+        try {
+            const response = await getOrdenes(buscar);
 
+            setOrdenes(
+                (response.data.data || []).filter(
+                    (orden) => orden.tipo_rubro === rubro
+                )
+            );
 
-    const [ordenEditar, setOrdenEditar] =
-        useState(null);
+        } catch (error) {
+            console.error(error);
+            Swal.fire(
+                "Error",
+                obtenerMensajeError(error, "No se pudieron cargar las órdenes."),
+                "error"
+            );
+        }
+    };
 
-    const [showDetalle, setShowDetalle] =
-    useState(false);
-
-    const [ordenDetalle, setOrdenDetalle] =
-        useState(null);
-
-    const navigate = useNavigate()
-
-   const cargarOrdenes = async () => {
-
-    try {
-
-        const response =
-            await getOrdenes(buscar);
-
-
-        const ordenesFiltradas =
-            (response.data.data || [])
-                .filter(
-                    (orden) =>
-                        orden.tipo_rubro === rubro
-                );
-
-
-        setOrdenes(
-            ordenesFiltradas
-        );
-
-
-    } catch (error) {
-
-    console.error(error);
-
-    Swal.fire(
-        "Error",
-        obtenerMensajeError(error, "No se pudo eliminar la orden."),
-        "error"
-    );
-}
-};
     useEffect(() => {
+        cargarOrdenes();
+    }, [rubro]);
 
-    cargarOrdenes();
-
-}, [rubro]);
-
-    const handleBuscar = (
-        e
-    ) => {
-
+    const handleBuscar = (e) => {
         e.preventDefault();
-
         cargarOrdenes();
     };
 
     const handleDetalle = async (id) => {
+        try {
+            const response = await getOrden(id);
+            setOrdenDetalle(response.data);
+            setShowDetalle(true);
 
-    try {
+        } catch (error) {
+            console.error(error);
+            Swal.fire(
+                "Error",
+                obtenerMensajeError(error, "No se pudo cargar el detalle."),
+                "error"
+            );
+        }
+    };
 
-        const response =
-            await getOrden(id);
+    const handleEditar = async (id) => {
+        try {
+            const response = await getOrden(id);
+            setOrdenEditar(response.data);
+            setShowModal(true);
 
-        setOrdenDetalle(
-            response.data
-        );
+        } catch (error) {
+            console.error(error);
+            Swal.fire(
+                "Error",
+                obtenerMensajeError(error, "No se pudo cargar la orden."),
+                "error"
+            );
+        }
+    };
 
-        setShowDetalle(
-            true
-        );
+    const handleEstado = async (orden) => {
 
-    } catch (error) {
+        const r = await Swal.fire({
+            title: `Estado de ${orden.codigo_orden}`,
+            html: `
+                <select id="swal-estado" class="swal2-input">
+                    ${ESTADOS.map(e => `
+                        <option value="${e}" ${e === orden.estado_actual ? "selected" : ""}>
+                            ${e.replaceAll("_", " ")}
+                        </option>
+                    `).join("")}
+                </select>
+                <input id="swal-obs" class="swal2-input" placeholder="Observación (opcional)">
+            `,
+            showCancelButton: true,
+            confirmButtonText: "Cambiar estado",
+            cancelButtonText: "Cancelar",
+            focusConfirm: false,
+            preConfirm: () => {
+                const estado = document.getElementById("swal-estado").value;
 
-    console.error(error);
+                if (estado === orden.estado_actual) {
+                    Swal.showValidationMessage("Elige un estado distinto al actual");
+                    return false;
+                }
 
-    Swal.fire(
-        "Error",
-        obtenerMensajeError(error, "No se pudo eliminar la orden."),
-        "error"
-    );
-}
-};
+                return {
+                    estado_actual: estado,
+                    observacion: document.getElementById("swal-obs").value || null,
+                };
+            },
+        });
 
-    const handleEliminar =
-        async (id) => {
+        if (!r.isConfirmed) return;
 
-            const result =
-                await Swal.fire({
+        try {
+            await cambiarEstadoOrden(orden.id, r.value);
 
-                    title:
-                        "¿Eliminar orden?",
+            await Swal.fire({
+                icon: "success",
+                title: "Estado actualizado",
+                timer: 1200,
+                showConfirmButton: false,
+            });
 
-                    text:
-                        "Esta acción no se puede deshacer",
+            cargarOrdenes();
 
-                    icon:
-                        "warning",
+        } catch (error) {
+            Swal.fire(
+                "No se pudo cambiar el estado",
+                obtenerMensajeError(error),
+                "error"
+            );
+        }
+    };
 
-                    showCancelButton:
-                        true,
+    const handleEliminar = async (id) => {
 
-                    confirmButtonText:
-                        "Sí, eliminar",
+        const result = await Swal.fire({
+            title: "¿Eliminar orden?",
+            text: "Esta acción no se puede deshacer",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, eliminar",
+            cancelButtonText: "Cancelar",
+        });
 
-                    cancelButtonText:
-                        "Cancelar",
-                });
+        if (!result.isConfirmed) return;
 
-            if (
-                !result.isConfirmed
-            )
-                return;
+        try {
+            await deleteOrden(id);
 
-            try {
+            await Swal.fire({
+                icon: "success",
+                title: "Orden eliminada",
+                timer: 1500,
+                showConfirmButton: false,
+            });
 
-                await deleteOrden(id);
+            cargarOrdenes();
 
-                await Swal.fire({
+        } catch (error) {
+            console.error(error);
+            Swal.fire(
+                "Error",
+                obtenerMensajeError(error, "No se pudo eliminar la orden."),
+                "error"
+            );
+        }
+    };
 
-                    icon:
-                        "success",
+    // Se llama al registrar un pago: refresca el detalle y la lista
+    const recargarOrdenDetalle = async () => {
 
-                    title:
-                        "Orden eliminada",
+        cargarOrdenes();
 
-                    timer:
-                        1500,
+        if (!ordenDetalle?.id) return;
 
-                    showConfirmButton:
-                        false,
-                });
+        try {
+            const response = await getOrden(ordenDetalle.id);
+            setOrdenDetalle(response.data);
 
-                cargarOrdenes();
-
-            } catch (error) {
-
-                console.error(error);
-
-                Swal.fire(
-                    "Error",
-                    obtenerMensajeError(error, "No se pudo eliminar la orden."),
-                    "error"
-                );
-            }
-        };
-
-
-        const recargarOrdenDetalle = async () => {
-
-    if (!ordenDetalle?.id) return;
-
-    try {
-
-        const response = await getOrden(ordenDetalle.id);
-
-        setOrdenDetalle(response.data);
-
-    } catch (error) {
-
-        console.error(error);
-
-    }
-};
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     return (
 
-      <div>
+        <div>
 
             <div className="container-fluid">
 
                 <div className="d-flex justify-content-between align-items-center mb-4">
 
-                   <h2>
+                    <h2>
                         {rubro === "TECNOLOGIA"
                             ? "Órdenes Tecnología"
                             : "Órdenes Vehiculares"}
                     </h2>
 
-                   <div className="d-flex justify-content-between align-items-center mb-4">
-
                     <button
                         className="btn btn-primary"
                         onClick={() => {
-
                             setOrdenEditar(null);
-
                             setShowModal(true);
-
                         }}
                     >
                         Nueva Orden
@@ -225,14 +243,7 @@ export default function OrdenesPage() {
 
                 </div>
 
-                </div>
-
-                <form
-                    onSubmit={
-                        handleBuscar
-                    }
-                    className="mb-3"
-                >
+                <form onSubmit={handleBuscar} className="mb-3">
 
                     <div className="input-group">
 
@@ -241,18 +252,10 @@ export default function OrdenesPage() {
                             className="form-control"
                             placeholder="Buscar..."
                             value={buscar}
-                            onChange={(e) =>
-                                setBuscar(
-                                    e.target.value
-                                )
-                            }
+                            onChange={(e) => setBuscar(e.target.value)}
                         />
 
-                        <button className="btn btn-dark">
-
-                            Buscar
-
-                        </button>
+                        <button className="btn btn-dark">Buscar</button>
 
                     </div>
 
@@ -260,208 +263,97 @@ export default function OrdenesPage() {
 
                 <div className="table-responsive">
 
-                    <table className="table table-bordered table-hover">
+                    <table className="table table-bordered table-hover align-middle">
 
                         <thead className="table-dark">
-
                             <tr>
-
-                                <th>
-                                    Código
-                                </th>
-
-                                <th>
-                                    Cliente
-                                </th>
-
-                                <th>
-                                    {rubro === "TECNOLOGIA" ? "Equipo" : "Vehículo"}
-                                </th>
-
-                                <th>
-                                    Estado
-                                </th>
-
-                                <th>
-                                    Prioridad
-                                </th>
-
-                                <th>
-                                    Total
-                                </th>
-
-                                <th>
-                                    Acciones
-                                </th>
-
+                                <th>Código</th>
+                                <th>Cliente</th>
+                                <th>{rubro === "TECNOLOGIA" ? "Equipo" : "Vehículo"}</th>
+                                <th>Estado</th>
+                                <th>Prioridad</th>
+                                <th>Total</th>
+                                <th>Acciones</th>
                             </tr>
-
                         </thead>
 
                         <tbody>
 
-                            {
-                                ordenes.map(
-                                    (
-                                        orden
-                                    ) => (
+                            {ordenes.length === 0 && (
+                                <tr>
+                                    <td colSpan="7" className="text-center">
+                                        No hay órdenes
+                                    </td>
+                                </tr>
+                            )}
 
-                                        <tr
-                                            key={
-                                                orden.id
-                                            }
+                            {ordenes.map((orden) => (
+
+                                <tr key={orden.id}>
+
+                                    <td>{orden.codigo_orden}</td>
+
+                                    <td>
+                                        {orden.cliente?.nombres} {orden.cliente?.apellidos}
+                                    </td>
+
+                                    <td>
+                                        {rubro === "TECNOLOGIA"
+                                            ? <>{orden.equipo?.marca} {orden.equipo?.modelo}</>
+                                            : <>{orden.vehiculo?.marca} {orden.vehiculo?.modelo}</>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        <span className={claseEstado(orden.estado_actual)}>
+                                            {orden.estado_actual}
+                                        </span>
+                                    </td>
+
+                                    <td>{orden.prioridad}</td>
+
+                                    <td>S/ {orden.total}</td>
+
+                                    <td>
+
+                                        <button
+                                            className="btn btn-info btn-sm me-2"
+                                            onClick={() => handleDetalle(orden.id)}
                                         >
+                                            Detalle
+                                        </button>
 
-                                            <td>
-                                                {
-                                                    orden.codigo_orden
-                                                }
-                                            </td>
+                                        <button
+                                            className="btn btn-secondary btn-sm me-2"
+                                            onClick={() => handleEstado(orden)}
+                                        >
+                                            Estado
+                                        </button>
 
-                                            <td>
-                                                {
-                                                    orden.cliente?.nombres
-                                                }{" "}
-                                                {
-                                                    orden.cliente?.apellidos
-                                                }
-                                            </td>
-
-                                            <td>
-
-                                                {
-                                                    rubro === "TECNOLOGIA"
-
-                                                    ?
-
-                                                    <>
-                                                        {orden.equipo?.marca}{" "}
-                                                        {orden.equipo?.modelo}
-                                                    </>
-
-                                                    :
-
-                                                    <>
-                                                        {orden.vehiculo?.marca}{" "}
-                                                        {orden.vehiculo?.modelo}
-                                                    </>
-
-                                                }
-
-                                                </td>
-
-                                          <td>
-
-                                            <span
-                                                className={
-                                                    orden.estado_actual === "RECEPCIONADO"
-                                                        ? "badge bg-secondary"
-
-                                                    : orden.estado_actual === "DIAGNOSTICO"
-                                                        ? "badge bg-info"
-
-                                                    : orden.estado_actual === "ESPERANDO_APROBACION"
-                                                        ? "badge bg-warning text-dark"
-
-                                                    : orden.estado_actual === "EN_REPARACION"
-                                                        ? "badge bg-primary"
-
-                                                    : orden.estado_actual === "REPARADO"
-                                                        ? "badge bg-success"
-
-                                                    : orden.estado_actual === "ENTREGADO"
-                                                        ? "badge bg-dark"
-
-                                                    : "badge bg-danger"
-                                                }
-                                            >
-
-                                                {orden.estado_actual}
-
-                                            </span>
-
-                                        </td>
-
-                                            
-
-                                            <td>
-                                                {
-                                                    orden.prioridad
-                                                }
-                                            </td>
-
-                                            <td>
-                                                S/
-                                                {
-                                                    orden.total
-                                                }
-                                            </td>
-
-                                            <td>
-                                               <button
-                                                className="btn btn-info btn-sm me-2"
-                                                onClick={() =>
-                                                    handleDetalle(
-                                                        orden.id
-                                                    )
-                                                }
-                                            >
-                                                Detalle
-                                            </button>
-
-                                                <button
+                                         <button
                                                     className="btn btn-warning btn-sm me-2"
-                                                    onClick={async () => {
-
-                                                        try {
-
-                                                            const response =
-                                                                await getOrden(
-                                                                    orden.id
-                                                                );
-
-                                                            setOrdenEditar(
-                                                                response.data
-                                                            );
-
-                                                            setShowModal(
-                                                                true
-                                                            );
-
-                                                        } catch (error) {
-
-                                                            console.error(error);
-
-                                                            Swal.fire(
-                                                                "Error",
-                                                                obtenerMensajeError(error, "No se pudo eliminar la orden."),
-                                                                "error"
-                                                            );
-                                                        }
-
-                                                    }}
+                                                    onClick={() => handleEditar(orden.id)}
                                                 >
                                                     Editar
-                                                </button>
+                                        </button>
 
+                                        {esAdmin && (
+                                            <>
+                                               
                                                 <button
                                                     className="btn btn-danger btn-sm"
-                                                    onClick={() =>
-                                                        handleEliminar(
-                                                            orden.id
-                                                        )
-                                                    }
+                                                    onClick={() => handleEliminar(orden.id)}
                                                 >
                                                     Eliminar
                                                 </button>
+                                            </>
+                                        )}
 
-                                            </td>
+                                    </td>
 
-                                        </tr>
+                                </tr>
 
-                                    )
-                                )
-                            }
+                            ))}
 
                         </tbody>
 
@@ -471,46 +363,26 @@ export default function OrdenesPage() {
 
             </div>
 
-            {
-                showModal && (
-
-                    <OrdenModal
-
-                        show={
-                            showModal
-                        }
-
-                        handleClose={() => {
-
-                            setShowModal(
-                                false
-                            );
-
-                            setOrdenEditar(
-                                null
-                            );
-                        }}
-
-                        orden={
-                            ordenEditar
-                        }
-
-                        onSuccess={
-                            cargarOrdenes
-                        }
-
-                    />
-
-                )
-            }
+            {showModal && (
+                <OrdenModal
+                    show={showModal}
+                    handleClose={() => {
+                        setShowModal(false);
+                        setOrdenEditar(null);
+                    }}
+                    orden={ordenEditar}
+                    onSuccess={cargarOrdenes}
+                />
+            )}
 
             <OrdenDetalleModal
-    show={showDetalle}
-    handleClose={() => setShowDetalle(false)}
-    orden={ordenDetalle}
-    onPagoRegistrado={recargarOrdenDetalle}
-/>
-      </div>
+                show={showDetalle}
+                handleClose={() => setShowDetalle(false)}
+                orden={ordenDetalle}
+                onPagoRegistrado={recargarOrdenDetalle}
+            />
+
+        </div>
 
     );
 }

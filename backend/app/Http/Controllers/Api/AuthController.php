@@ -19,10 +19,16 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
-
             return response()->json([
                 'message' => 'Credenciales incorrectas'
             ], 401);
+        }
+
+        // Bloquea cuentas desactivadas (antes de crear el token)
+        if (!$user->activo) {
+            return response()->json([
+                'message' => 'Tu cuenta está desactivada. Contacta al administrador.'
+            ], 403);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;

@@ -11,6 +11,9 @@ import { useRubro } from "../../../context/RubroContext";
 import Swal from "sweetalert2";
 import obtenerMensajeError from "../../../utils/obtenerMensajeError";
 
+import useAuthStore from "../../../store/authStore";
+import pedirClave from "../../../utils/pedirClave";
+
 import {
     safeParse,
     calcularTotal,
@@ -166,10 +169,22 @@ useEffect(() => {
 
         if (loading) return;
 
+        const esAdmin = useAuthStore.getState().user?.rol === "ADMIN";
+let clave = null;
+
+if (orden && !esAdmin) {
+    clave = await pedirClave(
+        "Editar orden",
+        "Para editar una orden necesitas la clave de permiso del administrador."
+    );
+
+    if (!clave) return;
+}
+
         setLoading(true);
 
         try {
-            const payload = limpiarPayloadOrden(formData);
+            const payload = { ...limpiarPayloadOrden(formData), clave_permiso: clave };            
             console.log("PAYLOAD:", payload);
 
             let response;

@@ -1,10 +1,4 @@
-function ProductoTable({
-    productos,
-    onEditar,
-    onEliminar,
-    onMovimiento,
-    onHistorial
-}) {
+function ProductoTable({ productos, esAdmin, onEditar, onEliminar, onMovimiento, onHistorial }) {
 
     return (
 
@@ -89,14 +83,15 @@ function ProductoTable({
                                     </td>
 
                                     <td>
-
-                                        <button
-                                            className="btn btn-sm btn-success me-2"
-                                            title="Entrada / Salida"
-                                            onClick={() => onMovimiento(producto)}
-                                        >
-                                            <i className="bi bi-arrow-left-right"></i>
-                                        </button>
+                                        {esAdmin && (
+                                            <button
+                                                className="btn btn-sm btn-success me-2"
+                                                title="Entrada / Salida"
+                                                onClick={() => onMovimiento(producto)}
+                                            >
+                                                <i className="bi bi-arrow-left-right"></i>
+                                            </button>
+                                        )}
 
                                         <button
                                             className="btn btn-sm btn-info me-2"
@@ -106,22 +101,17 @@ function ProductoTable({
                                             <i className="bi bi-clock-history"></i>
                                         </button>
 
-                                        <button
-                                            className="btn btn-sm btn-warning me-2"
-                                            title="Editar"
-                                            onClick={() => onEditar(producto)}
-                                        >
-                                            <i className="bi bi-pencil"></i>
-                                        </button>
+                                        {esAdmin && (
+                                            <>
+                                                <button className="btn btn-sm btn-warning me-2" title="Editar" onClick={() => onEditar(producto)}>
+                                                    <i className="bi bi-pencil"></i>
+                                                </button>
 
-                                        <button
-                                            className="btn btn-sm btn-danger"
-                                            title="Desactivar"
-                                            onClick={() => onEliminar(producto.id)}
-                                        >
-                                            <i className="bi bi-trash"></i>
-                                        </button>
-
+                                                <button className="btn btn-sm btn-danger" title="Desactivar" onClick={() => onEliminar(producto.id)}>
+                                                    <i className="bi bi-trash"></i>
+                                                </button>
+                                            </>
+                                        )}
                                     </td>
 
                                 </tr>

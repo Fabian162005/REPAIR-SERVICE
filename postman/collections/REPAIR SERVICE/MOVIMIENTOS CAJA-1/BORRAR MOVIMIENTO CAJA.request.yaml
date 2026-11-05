@@ -1,0 +1,14 @@
+$kind: http-request
+url: http://127.0.0.1:8000/api/orden-pagos/81
+method: DELETE
+headers:
+  Accept: application/json
+  Content-Type: application/json
+body:
+  type: json
+  content: ' {"clave_permiso":"2580"}'
+auth:
+  type: bearer
+  credentials:
+    token: 63|GIJzAW3pxm3wBtcP3SouPFP6husNOnWLKq4pu4cx77776454
+order: 7000

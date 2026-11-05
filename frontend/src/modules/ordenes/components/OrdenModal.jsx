@@ -11,7 +11,7 @@ const {
 } = formProps;
 
     return (
-        <Modal show={show} onHide={handleClose} size="xl" centered>
+        <Modal show={show} size="xl" centered enforceFocus={false}>
             <Form onSubmit={handleSubmit}>
                 <Modal.Header closeButton>
                     <Modal.Title>{orden ? "Editar Orden" : "Nueva Orden"}</Modal.Title>
