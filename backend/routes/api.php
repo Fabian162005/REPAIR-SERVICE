@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\ProductoController;
 use App\Http\Controllers\Api\VehiculoController;
 use App\Http\Controllers\Api\VentaRepuestoController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\PlanController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -47,6 +48,7 @@ Route::middleware(['auth:sanctum', 'activo'])->group(function () {
     Route::post('ventas-repuesto', [VentaRepuestoController::class, 'store']);
 
     Route::get('productos/{producto}/movimientos', [MovimientoController::class, 'index']);
+    Route::get('plan', [PlanController::class, 'show']);
 
     Route::apiResource('ordenes-servicio', OrdenServicioController::class)->only(['index', 'show', 'store', 'update']);
     Route::patch('ordenes-servicio/{id}/estado', [OrdenServicioController::class, 'cambiarEstado']);

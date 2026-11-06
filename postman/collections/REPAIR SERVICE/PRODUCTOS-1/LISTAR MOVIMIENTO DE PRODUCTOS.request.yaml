@@ -1,5 +1,4 @@
 $kind: http-request
-name: LISTAR MOVIMIENTO DE PRODUCTOS
 url: http://127.0.0.1:8000/api/productos/1/movimientos
 method: GET
 headers:
@@ -7,25 +6,5 @@ headers:
   Accept: application/json
 body:
   type: json
-  content: "{\r
-
-    \    \"nombre\": \"Filtro de Aceite Toyota\",\r
-
-    \    \"descripcion\": \"Filtro motor Toyota Yaris\",\r
-
-    \    \"categoria_id\": 2,\r
-
-    \    \"precio_compra\": 25,\r
-
-    \    \"precio_venta\": 45,\r
-
-    \    \"stock_actual\": 30,\r
-
-    \    \"stock_minimo\": 10,\r
-
-    \    \"unidad_medida\": \"Unidad\",\r
-
-    \    \"activo\": true\r
-
-    }"
+  content: ""
 order: 5000

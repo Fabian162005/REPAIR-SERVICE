@@ -4,12 +4,17 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Auditoria;
+use App\Models\Caja;
 use App\Models\User;
+use App\Services\PlanService;
+use DomainException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
+    public function __construct(private PlanService $plan) {}
+
     public function index(Request $request)
     {
         $usuarios = User::select('id', 'name', 'email', 'rol', 'activo', 'created_at')
@@ -28,6 +33,12 @@ class UserController extends Controller
             'password' => 'required|string|min:8',
             'rol'      => 'required|in:ADMIN,TRABAJADOR',
         ]);
+
+        try {
+            $this->plan->verificarCupo($d['rol']);
+        } catch (DomainException $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
+        }
 
         // El cast 'hashed' del modelo encripta la contraseña
         $user = User::create([
@@ -55,6 +66,7 @@ class UserController extends Controller
             'activo' => 'required|boolean',
         ]);
 
+        // 1. Protección de administradores
         $pierdeAdmin = $user->rol === 'ADMIN' && ($d['rol'] !== 'ADMIN' || !$d['activo']);
 
         if ($pierdeAdmin) {
@@ -70,6 +82,29 @@ class UserController extends Controller
                     'success' => false,
                     'message' => 'Debe existir al menos un administrador activo.'
                 ], 422);
+            }
+        }
+
+        // 2. No se desactiva con la caja abierta
+        if ($user->activo && !$d['activo']) {
+            $abierta = Caja::where('usuario_id', $user->id)->abiertas()->exists();
+
+            if ($abierta) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "{$user->name} tiene una caja abierta. Ciérrala desde Caja > Caja general antes de desactivarlo."
+                ], 422);
+            }
+        }
+
+        // 3. Cupo del plan: al reactivar o al cambiar de rol
+        $quedaActivo = (bool) $d['activo'];
+
+        if ($quedaActivo && (!$user->activo || $user->rol !== $d['rol'])) {
+            try {
+                $this->plan->verificarCupo($d['rol'], $user->id);
+            } catch (DomainException $e) {
+                return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
             }
         }
 

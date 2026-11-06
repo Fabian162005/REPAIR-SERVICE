@@ -1,5 +1,4 @@
 $kind: http-request
-name: INSERTAR PRODUCTOS
 url: http://127.0.0.1:8000/api/productos?=
 method: POST
 headers:
@@ -11,19 +10,19 @@ body:
   type: json
   content: "{\r
 
-    \    \"nombre\": \"Filtro de Aceite Toyota\",\r
+    \    \"nombre\": \"Pantalla del Redmi Note 15 CALIDAD INCELL\",\r
 
-    \    \"descripcion\": \"Filtro motor Toyota Yaris\",\r
+    \    \"descripcion\": \"Pantalla Incell de Redmi note 15\",\r
 
-    \    \"categoria_id\": 2,\r
+    \    \"categoria_id\": 1,\r
 
     \    \"precio_compra\": 25,\r
 
     \    \"precio_venta\": 45,\r
 
-    \    \"stock_actual\": 30,\r
+    \    \"stock_actual\": 20,\r
 
-    \    \"stock_minimo\": 10,\r
+    \    \"stock_minimo\": 5,\r
 
     \    \"unidad_medida\": \"Unidad\",\r
 
