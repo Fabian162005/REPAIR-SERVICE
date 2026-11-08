@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Configuracion;
 use App\Services\PlanService;
 
 class PlanController extends Controller
@@ -13,11 +12,13 @@ class PlanController extends Controller
         return response()->json([
             'success' => true,
             'data' => [
-                'plan'     => $plan->plan(),
-                'rubros'   => $plan->rubros(),
-                'vence_el' => Configuracion::obtener('vence_el') ?: null,
-                'limites'  => $plan->limites(),
-                'uso'      => $plan->uso(),
+                'plan'           => $plan->plan(),
+                'rubros'         => $plan->rubros(),
+                'vence_el'       => $plan->venceEl()?->toDateString(),
+                'dias_restantes' => $plan->diasRestantes(),
+                'vencida'        => $plan->vencida(),
+                'limites'        => $plan->limites(),
+                'uso'            => $plan->uso(),
             ],
         ]);
     }

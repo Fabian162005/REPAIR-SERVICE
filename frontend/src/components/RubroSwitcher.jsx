@@ -2,8 +2,16 @@ import { useRubro } from "../context/RubroContext";
 
 function RubroSwitcher() {
 
-    const { rubro, cambiarRubro } = useRubro();
+    const { rubro, cambiarRubro, puedeCambiarRubro } = useRubro();
 
+if (!puedeCambiarRubro) {
+    return (
+        <span className={`badge fs-6 ${rubro === "TECNOLOGIA" ? "bg-primary" : "bg-success"}`}>
+            <i className={`bi ${rubro === "TECNOLOGIA" ? "bi-pc-display" : "bi-car-front-fill"} me-2`}></i>
+            {rubro === "TECNOLOGIA" ? "Servicio Técnico" : "Taller Vehicular"}
+        </span>
+    );
+}
     return (
         <>
             <style>{`

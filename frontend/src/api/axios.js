@@ -9,7 +9,6 @@ const api = axios.create({
   },
 });
 
-// Manda el token en cada petición
 api.interceptors.request.use((config) => {
   const token = useAuthStore.getState().token;
 
@@ -20,13 +19,19 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Si el token ya no sirve, vuelve al login
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     const esLogin = error.config?.url?.includes("/login");
+    const data = error.response?.data;
 
     if (error.response?.status === 401 && !esLogin) {
+
+      // El login mostrará este aviso
+      if (data?.suscripcion_vencida) {
+        sessionStorage.setItem("aviso_login", data.message);
+      }
+
       useAuthStore.getState().logout();
       window.location.href = "/";
     }

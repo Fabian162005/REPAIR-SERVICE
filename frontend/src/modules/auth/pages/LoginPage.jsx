@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
 
@@ -9,6 +10,21 @@ function LoginPage() {
   const { register, handleSubmit } = useForm();
 
   const loginStore = useAuthStore((state) => state.login);
+
+  // Aviso cuando la sesión se cerró por suscripción vencida
+  useEffect(() => {
+    const aviso = sessionStorage.getItem("aviso_login");
+
+    if (aviso) {
+      sessionStorage.removeItem("aviso_login");
+
+      Swal.fire({
+        icon: "warning",
+        title: "Suscripción vencida",
+        text: aviso
+      });
+    }
+  }, []);
 
   const onSubmit = async (data) => {
 
@@ -31,13 +47,13 @@ function LoginPage() {
 
     } catch (error) {
 
-    Swal.fire({
-      icon: "error",
-      title: "Error",
-      text: error.response?.data?.message || "No se pudo iniciar sesión"
-    });
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.response?.data?.message || "No se pudo iniciar sesión"
+      });
 
-  }
+    }
 
   };
 

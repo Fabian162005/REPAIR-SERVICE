@@ -77,4 +77,20 @@ class StoreProductoRequest extends FormRequest
             'stock_minimo.min' => 'El stock mínimo no puede ser negativo.',
         ];
     }
+
+    public function withValidator($validator)
+{
+    $validator->after(function ($v) {
+
+        if ($v->errors()->isNotEmpty() || !$this->categoria_id) {
+            return;
+        }
+
+        $cat = \App\Models\CategoriaProducto::find($this->categoria_id);
+
+        if ($cat && !app(\App\Services\PlanService::class)->rubroPermitido($cat->tipo_rubro)) {
+            $v->errors()->add('categoria_id', "Tu plan no incluye el rubro {$cat->tipo_rubro}.");
+        }
+    });
+}
 }

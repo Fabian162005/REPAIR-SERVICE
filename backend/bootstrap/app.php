@@ -15,7 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => \App\Http\Middleware\SoloAdmin::class,
             'activo' => \App\Http\Middleware\UsuarioActivo::class,
-
+            'suscripcion' => \App\Http\Middleware\SuscripcionVigente::class,
+            'rubro'      => \App\Http\Middleware\RubroHabilitado::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

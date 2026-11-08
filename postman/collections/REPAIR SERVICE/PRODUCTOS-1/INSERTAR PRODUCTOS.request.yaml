@@ -29,4 +29,8 @@ body:
     \    \"activo\": true\r
 
     }"
+auth:
+  type: bearer
+  credentials:
+    token: 99|ovukeg4TlGJggNIQQMC2x4kFNIHlE2ixmSLqqnKWa971f8c1
 order: 7000

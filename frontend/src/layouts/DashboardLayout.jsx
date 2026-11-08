@@ -1,5 +1,8 @@
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
+import AvisoSuscripcion from "../components/AvisoSuscripcion";
+
+<AvisoSuscripcion />
 
 function DashboardLayout({ children }) {
 

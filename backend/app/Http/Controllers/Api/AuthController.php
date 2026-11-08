@@ -31,6 +31,16 @@ class AuthController extends Controller
             ], 403);
         }
 
+            $plan = app(\App\Services\PlanService::class);
+
+            if ($plan->vencida()) {
+                return response()->json([
+                    'message' => 'Tu suscripción venció el ' . $plan->venceEl()->format('d/m/Y')
+                        . '. Contacta al proveedor para renovar.',
+                    'suscripcion_vencida' => true,
+                ], 403);
+            }
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([

@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\Configuracion;
 use App\Models\User;
 use DomainException;
-
+use Carbon\Carbon;
 class PlanService
 {
     public const PLANES = [
@@ -69,4 +69,34 @@ class PlanService
             ));
         }
     }
+
+        public function venceEl(): ?Carbon
+    {
+        $v = Configuracion::obtener('vence_el');
+
+        return $v ? Carbon::parse($v)->startOfDay() : null;
+    }
+
+    /** La fecha de vencimiento es el último día válido (inclusive). */
+    public function vencida(): bool
+    {
+        $v = $this->venceEl();
+
+        return $v !== null && today()->greaterThan($v);
+    }
+
+    public function diasRestantes(): ?int
+    {
+        $v = $this->venceEl();
+
+        return $v ? (int) today()->diffInDays($v, false) : null;
+    }
+
+    public function rubroPermitido(string $rubro): bool
+    {
+        $r = $this->rubros();
+
+        return $r === 'AMBOS' || $r === strtoupper($rubro);
+    }
 }
+

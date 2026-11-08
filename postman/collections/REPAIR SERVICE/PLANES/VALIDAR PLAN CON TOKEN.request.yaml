@@ -1,0 +1,16 @@
+$kind: http-request
+url: http://127.0.0.1:8000/api/ordenes-servicio?
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+queryParams:
+  "": null
+body:
+  type: json
+  content: '{ "tipo_rubro": "VEHICULAR" }'
+auth:
+  type: bearer
+  credentials:
+    token: 99|ovukeg4TlGJggNIQQMC2x4kFNIHlE2ixmSLqqnKWa971f8c1
+order: 2000

@@ -27,7 +27,7 @@ Route::apiResource('categorias-producto', CategoriaProductoController::class);
 Route::post('orden-archivos', [OrdenArchivoController::class, 'store']);
 Route::delete('orden-archivos/{id}', [OrdenArchivoController::class, 'destroy']);
 
-Route::middleware(['auth:sanctum', 'activo'])->group(function () {
+Route::middleware(['auth:sanctum', 'activo', 'suscripcion', 'rubro'])->group(function () {
     
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);

@@ -4,5 +4,5 @@ method: GET
 auth:
   type: bearer
   credentials:
-    token: 87|kqhEHrxtRHmfhpWn4baMseaJpmCCe9RzOpsqjDPK5e50eb55
+    token: 103|u61tMHS7kGe8Dk7g5g7xWcFQTgtIPAqIsCEzlW3Rdf3c0044
 order: 1000
