@@ -5,6 +5,8 @@ import usuarioService from "../services/usuarioService";
 import obtenerMensajeError from "../../../utils/obtenerMensajeError";
 import useAuthStore from "../../../store/authStore";
 
+import api from "../../../api/axios";
+
 // Evita que comillas o símbolos rompan el HTML del Swal
 const esc = (s) =>
     String(s ?? "")
@@ -18,13 +20,21 @@ export default function UsuariosPage() {
     const yo = useAuthStore((s) => s.user);
     const [usuarios, setUsuarios] = useState([]);
 
+    const [plan, setPlan] = useState(null);
+
     const cargar = async () => {
-        try {
-            setUsuarios(await usuarioService.listar());
-        } catch (error) {
-            Swal.fire("Error", obtenerMensajeError(error, "No se pudieron cargar los usuarios."), "error");
-        }
-    };
+    try {
+        const [lista, p] = await Promise.all([
+            usuarioService.listar(),
+            api.get("/plan"),
+        ]);
+
+        setUsuarios(lista);
+        setPlan(p.data.data);
+    } catch (error) {
+        Swal.fire("Error", obtenerMensajeError(error, "No se pudieron cargar los usuarios."), "error");
+    }
+};
 
     useEffect(() => { cargar(); }, []);
 
@@ -83,6 +93,9 @@ export default function UsuariosPage() {
                     <option value="TRABAJADOR" ${u.rol === "TRABAJADOR" ? "selected" : ""}>Trabajador</option>
                     <option value="ADMIN" ${u.rol === "ADMIN" ? "selected" : ""}>Administrador</option>
                 </select>
+                <input id="u-dni" class="swal2-input" placeholder="DNI" value="${esc(u.dni)}">
+                <input id="u-tel" class="swal2-input" placeholder="Teléfono" value="${esc(u.telefono)}">
+                <input id="u-dir" class="swal2-input" placeholder="Dirección" value="${esc(u.direccion)}">
             `,
             showCancelButton: true,
             confirmButtonText: "Guardar",
@@ -97,7 +110,17 @@ export default function UsuariosPage() {
                     return false;
                 }
 
-                return { name, email, rol: document.getElementById("u-rol").value, activo: u.activo };
+                
+
+                return {
+                    name,
+                    email,
+                    rol: document.getElementById("u-rol").value,
+                    activo: u.activo,
+                    dni: document.getElementById("u-dni").value.trim() || null,
+                    telefono: document.getElementById("u-tel").value.trim() || null,
+                    direccion: document.getElementById("u-dir").value.trim() || null,
+                };
             },
         });
 
@@ -178,6 +201,18 @@ export default function UsuariosPage() {
                 </button>
             </div>
 
+            {plan && (
+    <div className="d-flex flex-wrap gap-2 mb-3">
+            <span className="badge bg-dark p-2">Plan {plan.plan}</span>
+            <span className="badge bg-secondary p-2">
+                Administradores {plan.uso.admins}/{plan.limites.admins}
+            </span>
+            <span className="badge bg-secondary p-2">
+                Trabajadores {plan.uso.trabajadores}/{plan.limites.trabajadores}
+            </span>
+        </div>
+    )}
+
             <div className="table-responsive">
                 <table className="table table-hover align-middle">
 
@@ -207,6 +242,7 @@ export default function UsuariosPage() {
                                         {u.rol}
                                     </span>
                                 </td>
+
 
                                 <td>
                                     <span className={`badge ${u.activo ? "bg-success" : "bg-secondary"}`}>

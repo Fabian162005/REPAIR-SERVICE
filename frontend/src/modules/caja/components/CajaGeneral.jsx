@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import cajaService from "../Services/CajaServices";
+import cajaService from "../Services/CajaService";
 import obtenerMensajeError from "../../../utils/obtenerMensajeError";
 import Swal from "sweetalert2";
 import { reabrirCaja, ajustarCaja, abrirCajaDe } from "../cajaAcciones";

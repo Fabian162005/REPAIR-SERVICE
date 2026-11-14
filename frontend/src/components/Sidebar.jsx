@@ -78,6 +78,10 @@ function Sidebar() {
                     }
                 </Link>
 
+                <Link className="sidebar-link" to="/ventas">
+                    Venta de repuestos
+                </Link>
+
                 {/* CAJA */}
                 <Link className="sidebar-link" to="/caja">
                     Caja
@@ -89,10 +93,12 @@ function Sidebar() {
                         Usuarios
                     </Link>
                 )}
-                                
-                <Link className="sidebar-link" to="/ventas">
-                    Venta de repuestos
+
+                 <Link className="sidebar-link" to="/configuracion">
+                    Configuración
                 </Link>
+                                
+            
 
             </div>
 

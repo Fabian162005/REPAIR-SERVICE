@@ -17,10 +17,11 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
-        $usuarios = User::select('id', 'name', 'email', 'rol', 'activo', 'created_at')
-            ->when($request->boolean('activos'), fn ($q) => $q->where('activo', true))
-            ->orderBy('name')
-            ->get();
+        $usuarios = User::select('id', 'name', 'email', 'rol', 'activo', 'dni', 'telefono', 'direccion', 'created_at')
+    ->when($request->boolean('activos'), fn ($q) => $q->where('activo', true))
+    ->orderBy('name')
+    ->get()
+    ->makeVisible(['dni', 'telefono', 'direccion']);
 
         return response()->json(['success' => true, 'data' => $usuarios]);
     }
@@ -32,6 +33,9 @@ class UserController extends Controller
             'email'    => 'required|email|max:255|unique:users,email',
             'password' => 'required|string|min:8',
             'rol'      => 'required|in:ADMIN,TRABAJADOR',
+            'dni'       => 'nullable|string|max:20',
+            'telefono'  => 'nullable|string|max:20',
+            'direccion' => 'nullable|string|max:255',
         ]);
 
         try {
@@ -47,6 +51,9 @@ class UserController extends Controller
             'password' => $d['password'],
             'rol'      => $d['rol'],
             'activo'   => true,
+            'dni'       => $d['dni'] ?? null,
+            'telefono'  => $d['telefono'] ?? null,
+            'direccion' => $d['direccion'] ?? null,
         ]);
 
         Auditoria::registrar('CREAR_USUARIO', 'usuario', $user->id, [

@@ -1,0 +1,13 @@
+$kind: http-request
+url: http://127.0.0.1:8000/api/negocio
+method: PUT
+headers:
+  Accept: application/json
+body:
+  type: json
+  content: '{ "nombre": "Prueba de trabajador" }'
+auth:
+  type: bearer
+  credentials:
+    token: 111|CwlUk8AgomPnDqffnJUsESlF8Rn6qSeSJYSZQIOU5a48d2cf
+order: 4379748908141495

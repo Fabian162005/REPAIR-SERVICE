@@ -15,6 +15,8 @@ use App\Http\Controllers\Api\VehiculoController;
 use App\Http\Controllers\Api\VentaRepuestoController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\PlanController;
+use App\Http\Controllers\Api\NegocioController;
+use App\Http\Controllers\Api\PerfilController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -53,6 +55,12 @@ Route::middleware(['auth:sanctum', 'activo', 'suscripcion', 'rubro'])->group(fun
     Route::apiResource('ordenes-servicio', OrdenServicioController::class)->only(['index', 'show', 'store', 'update']);
     Route::patch('ordenes-servicio/{id}/estado', [OrdenServicioController::class, 'cambiarEstado']);
 
+    Route::get('negocio', [NegocioController::class, 'show']);
+
+    Route::get('perfil', [PerfilController::class, 'show']);
+    Route::put('perfil', [PerfilController::class, 'update'])->middleware('throttle:10,1');
+    Route::put('perfil/password', [PerfilController::class, 'cambiarPassword'])->middleware('throttle:10,1');
+    
     // ---------- Solo administrador ----------
     Route::middleware('admin')->group(function () {
 
@@ -77,6 +85,9 @@ Route::middleware(['auth:sanctum', 'activo', 'suscripcion', 'rubro'])->group(fun
         Route::post('usuarios', [UserController::class, 'store']);
         Route::put('usuarios/{user}', [UserController::class, 'update']);
         Route::put('usuarios/{user}/password', [UserController::class, 'resetPassword']);
+
+        Route::put('negocio', [NegocioController::class, 'update']);
+        Route::post('negocio/logo', [NegocioController::class, 'logo']);
 
         // CRUD antiguo de movimientos: se salta la lógica de caja, por eso queda solo para admin
         Route::apiResource('movimientos-caja', MovimientoCajaController::class);

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 
 import useAuthStore from "../../../store/authStore";
-import cajaService from "../Services/CajaServices";
+import cajaService from "../Services/CajaService";
 import obtenerMensajeError from "../../../utils/obtenerMensajeError";
 
 import CajaResumen from "../components/CajaResumen";

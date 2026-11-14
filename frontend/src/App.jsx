@@ -19,6 +19,8 @@ import ProductosPage from "./modules/Inventario/pages/ProductosPage";
 import CajaPage from "./modules/caja/pages/CajaPage";
 import VentasRepuestoPage from "./modules/ventas/pages/VentasRepuestoPage";
 import UsuariosPage from "./modules/usuarios/pages/UsuariosPage";
+import ConfiguracionPage from "./modules/configuracion/pages/ConfiguracionPage";
+
 
 function AppRoutes() {
 
@@ -139,6 +141,20 @@ const user = useAuthStore((state) => state.user);
         token && user?.rol === "ADMIN" ? (
             <DashboardLayout>
                 <UsuariosPage />
+            </DashboardLayout>
+        ) : (
+            <Navigate to="/" />
+        )
+    }
+/>
+
+
+<Route
+    path="/configuracion"
+    element={
+        token ? (
+            <DashboardLayout>
+                <ConfiguracionPage />
             </DashboardLayout>
         ) : (
             <Navigate to="/" />

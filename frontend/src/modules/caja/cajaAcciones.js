@@ -1,5 +1,5 @@
 import Swal from "sweetalert2";
-import cajaService from "./Services/CajaServices";
+import cajaService from "./Services/CajaService";
 import obtenerMensajeError from "../../utils/obtenerMensajeError";
 import usuarioService from "../usuarios/services/usuarioService";
 
