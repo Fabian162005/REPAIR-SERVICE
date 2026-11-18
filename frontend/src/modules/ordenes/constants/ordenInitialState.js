@@ -1,7 +1,13 @@
+// Hora local del navegador en formato "AAAA-MM-DD HH:mm:ss".
+// toISOString() daba la hora UTC, 5 horas adelantada respecto a Lima.
+const ahoraLocal = () => {
+    const d = new Date();
+    const p = (n) => String(n).padStart(2, "0");
 
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+};
 
-
-export const ORDEN_INITIAL_STATE={    
+export const ORDEN_INITIAL_STATE = {
     cliente_id: "",
     equipo_id: "",
     vehiculo_id: "",
@@ -12,8 +18,12 @@ export const ORDEN_INITIAL_STATE={
     checklist_vehicular: [],
     contrasena: "",
     prioridad: "MEDIA",
-    fecha_ingreso: new Date().toISOString().slice(0, 19).replace("T", " "),
-    fecha_ingreso_recepcion: new Date().toISOString().slice(0, 19).replace("T", " "),
+
+    // Getters: se evalúan cada vez que se hace {...ORDEN_INITIAL_STATE},
+    // así la hora siempre es la de ese momento y no la de la carga de la app.
+    get fecha_ingreso() { return ahoraLocal(); },
+    get fecha_ingreso_recepcion() { return ahoraLocal(); },
+
     kilometraje_ingreso: "",
     combustible_ingreso: "",
     diagnostico_motor: "",
@@ -47,4 +57,4 @@ export const ORDEN_INITIAL_STATE={
     diagnostico_final: "",
     detalles: [],
     repuestos: [],
-}
+};

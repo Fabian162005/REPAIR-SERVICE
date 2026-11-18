@@ -293,7 +293,14 @@ function ProductosPage(){
                 </div>
 
                 {esAdmin && (
-                    <button className="btn btn-primary" onClick={() => { /* tu onClick actual */ }}>
+                    <button
+                        className="btn btn-primary"
+                        onClick={() => {
+                            setProducto(productoInicial);
+                            setModoEdicion(false);
+                            setMostrarModal(true);
+                        }}
+                    >
                         <i className="bi bi-plus-circle"></i> Nuevo Producto
                     </button>
                 )}

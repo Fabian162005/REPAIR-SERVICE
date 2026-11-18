@@ -18,6 +18,7 @@ import {
     safeParse,
     calcularTotal,
     limpiarPayloadOrden,
+    aplanarOrdenVehicular,
 } from "../utils/OrdenHelpers";
 
 import { ORDEN_INITIAL_STATE } from "../constants/ordenInitialState";
@@ -56,6 +57,8 @@ export default function useOrdenForm({
         actualizarRepuesto,
     } = useDetalleOrden(setFormData);
 
+    
+
     // ==========================
     // Cargar Orden
     // ==========================
@@ -83,30 +86,29 @@ useEffect(() => {
 
 },[rubro]);
 
-    useEffect(() => {
-        if (orden) {
-            setArchivosExistentes(orden.archivos || []);
+useEffect(() => {
+    if (orden) {
+        setArchivosExistentes(orden.archivos || []);
 
-            setFormData({
-                ...ORDEN_INITIAL_STATE,
-                ...orden,
-                accesorios: safeParse(orden.accesorios),
-                checklist_recepcion: safeParse(orden.checklist_recepcion),
-                checklist_vehicular: safeParse(
-                    orden.checklist_vehicular
-                ),
-            });
-        } else {
+        setFormData({
+            ...ORDEN_INITIAL_STATE,
+            ...orden,
+            ...aplanarOrdenVehicular(orden),
+            accesorios: safeParse(orden.accesorios),
+            checklist_recepcion: safeParse(orden.checklist_recepcion),
+            checklist_vehicular: safeParse(orden.checklist_vehicular),
+        });
+    } else {
 
-            setFormData({
-                ...ORDEN_INITIAL_STATE,
-                tipo_rubro: rubro
-            });
+        setFormData({
+            ...ORDEN_INITIAL_STATE,
+            tipo_rubro: rubro
+        });
 
-            setArchivosExistentes([]);
+        setArchivosExistentes([]);
 
-        }
-    }, [orden, rubro]);
+    }
+}, [orden, rubro]);
     // ==========================
     // Catálogos
     // ==========================

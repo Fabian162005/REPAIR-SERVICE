@@ -324,6 +324,25 @@ export default function OrdenesPage() {
                                         </button>
 
                                         <button
+                                            className="btn btn-outline-dark btn-sm me-2"
+                                            title="Imprimir orden de recepción"
+                                            onClick={() => window.open(`/ordenes/${orden.id}/imprimir`, "_blank")}
+                                        >
+                                            <i className="bi bi-printer"></i> Recepción
+                                        </button>
+
+                                        <button
+                                            className="btn btn-outline-success btn-sm me-2"
+                                            title={orden.estado_actual === "ENTREGADO"
+                                                ? "Imprimir acta de entrega"
+                                                : "Disponible cuando la orden esté ENTREGADA"}
+                                            disabled={orden.estado_actual !== "ENTREGADO"}
+                                            onClick={() => window.open(`/ordenes/${orden.id}/imprimir?tipo=entrega`, "_blank")}
+                                        >
+                                            <i className="bi bi-printer"></i> Acta
+                                        </button>
+
+                                        <button
                                             className="btn btn-secondary btn-sm me-2"
                                             onClick={() => handleEstado(orden)}
                                         >

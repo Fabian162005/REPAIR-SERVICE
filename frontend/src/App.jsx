@@ -20,6 +20,7 @@ import CajaPage from "./modules/caja/pages/CajaPage";
 import VentasRepuestoPage from "./modules/ventas/pages/VentasRepuestoPage";
 import UsuariosPage from "./modules/usuarios/pages/UsuariosPage";
 import ConfiguracionPage from "./modules/configuracion/pages/ConfiguracionPage";
+import OrdenImprimirPage from "./modules/ordenes/pages/OrdenImprimirPage";
 
 
 function AppRoutes() {
@@ -160,6 +161,12 @@ const user = useAuthStore((state) => state.user);
             <Navigate to="/" />
         )
     }
+/>
+
+
+<Route
+    path="/ordenes/:id/imprimir"
+    element={token ? <OrdenImprimirPage /> : <Navigate to="/" />}
 />
 
       </Routes>
